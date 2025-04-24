@@ -18,9 +18,9 @@
 
         <div use:shortcut={{ key: 'e', meta: true, onPress: () => editing.update(v => !v) }}>
             {#if $editing}
-                <Editor />
+              <Editor />
             {:else}
-                <PageViewer />
+              <PageViewer />
             {/if}
         </div>
     </div>
