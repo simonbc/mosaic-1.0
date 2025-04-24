@@ -1,11 +1,15 @@
 <script>
-  import { createPageStore } from '../stores/page.js'
-  import { onMount } from 'svelte'
+  import { onMount, onDestroy } from 'svelte'
+  import { get } from 'svelte/store'
   import { marked } from 'marked'
+
+  import { createPageStore } from '../stores/pages.js'
+  import { listRevisions, getLatestRevision, newRevision } from '../stores/revisions.js'
   import { shortcut } from '../actions/shortcut.js'
 
   export let docId = 'default'
   const page = createPageStore(docId)
+  let content = ''
   let textareaEl
   let showPreview = true
   function togglePreview() {
@@ -13,7 +17,13 @@
   }
 
   onMount(async () => {
+    const latest = await getLatestRevision(docId)
+    if (latest) content = latest.content
     textareaEl?.focus()
+  })
+
+  onDestroy(async () => {
+    await newRevision({ id: docId, content, published: get(page).published })
   })
 </script>
 
@@ -24,12 +34,12 @@
   <div class="editor-container" class:full={!showPreview}>
     <textarea
       bind:this={textareaEl}
-      bind:value={$page.content}
+      bind:value={content}
       placeholder="Start writing..."
     />
   </div>
   <div class="preview-container" class:hidden={!showPreview}>
-    {@html marked($page.content)}
+    {@html marked(content)}
   </div>
 </main>
 
