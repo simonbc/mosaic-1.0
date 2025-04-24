@@ -3,11 +3,11 @@
   import { marked } from 'marked';
 
   export let docId = 'default';
-  const contentStore = createPageStore(docId);
+  const page = createPageStore(docId);
 </script>
 
 <main class="viewer-container">
-  {@html marked($contentStore)}
+  {@html marked($page.content)}
 </main>
 
 <style>

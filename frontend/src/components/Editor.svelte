@@ -1,20 +1,20 @@
 <script>
-  import { createPageStore } from '../stores/page'
+  import { createPageStore } from '../stores/page.js'
   import { onMount } from 'svelte'
-  import { marked } from 'marked';
-  import { shortcut } from '../actions/shortcut.js';
+  import { marked } from 'marked'
+  import { shortcut } from '../actions/shortcut.js'
 
   export let docId = 'default'
-  const content = createPageStore(docId)
+  const page = createPageStore(docId)
   let textareaEl
-  let showPreview = true;
+  let showPreview = true
   function togglePreview() {
-    showPreview = !showPreview;
+    showPreview = !showPreview
   }
 
   onMount(async () => {
     textareaEl?.focus()
-  });
+  })
 </script>
 
 <main
@@ -24,12 +24,12 @@
   <div class="editor-container" class:full={!showPreview}>
     <textarea
       bind:this={textareaEl}
-      bind:value={$content}
+      bind:value={$page.content}
       placeholder="Start writing..."
     />
   </div>
   <div class="preview-container" class:hidden={!showPreview}>
-    {@html marked($content)}
+    {@html marked($page.content)}
   </div>
 </main>
 
