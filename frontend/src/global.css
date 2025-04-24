@@ -1,0 +1,22 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+:root {
+  --color-primary: #0066cc;
+  --color-on-primary: white;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --radius: 0.25rem;
+  font-family: system-ui, sans-serif;
+}
+body {
+  background: white;
+  color: #333;
+}
