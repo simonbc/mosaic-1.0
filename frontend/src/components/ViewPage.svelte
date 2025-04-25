@@ -1,25 +1,36 @@
 <script>
-  import { createPageStore } from '../stores/pages.js';
-  import { marked } from 'marked';
   import { onMount } from 'svelte'
-  import { getLatestRevision } from '../stores/revisions.js'
+  import { marked } from 'marked'
 
-  export let docId = 'default';
-  const page = createPageStore(docId);
 
-  let latestContent = ''
+  export let docId
+  export let currentRevision
+  export let revisions
+
+  let content = ''
+
   onMount(async () => {
-    const latest = await getLatestRevision(docId)
-    if (latest) {
-      latestContent = latest.content
-    } else {
-      latestContent = ''
+    if (currentRevision) {
+      content = currentRevision.content
+    } else if (docId) {
+      const latest = await revisions.getLatest()
+      content = latest?.content || ''
     }
   })
+
+  $: {
+    if (currentRevision) {
+      content = currentRevision.content
+    } else if (docId) {
+      revisions.getLatest().then(latest => {
+        content = latest?.content || ''
+      })
+    }
+  }
 </script>
 
 <main class="viewer-container">
-  {@html marked(latestContent)}
+  {@html marked(content)}
 </main>
 
 <style>

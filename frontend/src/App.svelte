@@ -7,6 +7,21 @@
 
     import { editing } from './stores/editor.js'
     import { shortcut } from './actions/shortcut.js'
+    import { createRevisionsStore } from './stores/revisions.js'
+
+    let docId = 'default'
+    let currentRevision = null
+
+    const revisions = createRevisionsStore(docId)
+
+    function changeRevision(rev) {
+        currentRevision = rev
+    }
+
+    function toggleEditing() {
+        currentRevision = null
+        editing.update((e) => !e)
+    }
 </script>
 
 <main>
@@ -15,17 +30,16 @@
     <Sidebar />
 
     <div class="content">
-
-        <div use:shortcut={{ key: 'e', meta: true, onPress: () => editing.update(v => !v) }}>
+        <div use:shortcut={{ key: 'e', meta: true, onPress: () => toggleEditing() }}>
             {#if $editing}
-              <Editor />
+                <Editor {docId} {currentRevision} {revisions} />
             {:else}
-              <ViewPage />
+                <ViewPage {docId} {currentRevision} {revisions} />
             {/if}
         </div>
     </div>
 
-    <Revisions />
+    <Revisions {docId} {revisions} onChangeRevision={changeRevision} />
 
 </main>
 

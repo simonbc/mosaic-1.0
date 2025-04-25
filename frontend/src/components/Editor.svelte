@@ -1,13 +1,14 @@
 <script>
   import { onMount, onDestroy } from 'svelte'
-  import { get } from 'svelte/store'
   import { marked } from 'marked'
 
   import { createPageStore } from '../stores/pages.js'
-  import { listRevisions, getLatestRevision, newRevision } from '../stores/revisions.js'
   import { shortcut } from '../actions/shortcut.js'
 
-  export let docId = 'default'
+  export let docId
+  export let currentRevision
+  export let revisions
+
   const page = createPageStore(docId)
   let content = ''
   let textareaEl
@@ -17,13 +18,18 @@
   }
 
   onMount(async () => {
-    const latest = await getLatestRevision(docId)
-    if (latest) content = latest.content
+    if (currentRevision) {
+      content = currentRevision.content
+    } else {
+      const latest = await revisions.getLatest()
+      content = latest.content ?? ''
+    }
+    
     textareaEl?.focus()
   })
 
   onDestroy(async () => {
-    await newRevision({ id: docId, content, published: get(page).published })
+    await revisions.create(content)
   })
 </script>
 
