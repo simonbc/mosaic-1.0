@@ -3,6 +3,7 @@
   import { marked } from 'marked'
 
   import { createPageStore } from '../stores/pages.js'
+  import { settings } from '../stores/settings.js'
   import { shortcut } from '../actions/shortcut.js'
 
   export let docId
@@ -12,9 +13,11 @@
   const page = createPageStore(docId)
   let content = ''
   let textareaEl
-  let showPreview = true
+
+  $: previewVisible = $settings.showPreview
+  
   function togglePreview() {
-    showPreview = !showPreview
+    settings.update(s => ({ ...s, showPreview: !s.showPreview }))
   }
 
   onMount(async () => {
@@ -37,14 +40,14 @@
   class="split-container"
   use:shortcut={{ key: 'p', meta: true, onPress: togglePreview }}
 >
-  <div class="editor-container" class:full={!showPreview}>
+  <div class="editor-container" class:full={!previewVisible}>
     <textarea
       bind:this={textareaEl}
       bind:value={content}
       placeholder="Start writing..."
     />
   </div>
-  <div class="preview-container" class:hidden={!showPreview}>
+  <div class="preview-container" class:hidden={!previewVisible}>
     {@html marked(content)}
   </div>
 </main>

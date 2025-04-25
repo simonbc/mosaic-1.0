@@ -5,13 +5,16 @@
     import ViewPage from './components/ViewPage.svelte'
     import Revisions from './components/Revisions.svelte'
 
-    import { editing, showRevisions } from './stores/ui.js'
+    import { editing } from './stores/ui.js'
+    import { settings } from './stores/settings.js'
     import { shortcut } from './actions/shortcut.js'
     import { createRevisionsStore } from './stores/revisions.js'
     import { fade } from 'svelte/transition'
 
     let docId = 'default'
     let currentRevision = null
+
+    $: revisionsVisible = $settings.showRevisions
 
     const revisions = createRevisionsStore(docId)
 
@@ -25,7 +28,7 @@
     }
 
     function toggleRevisions() {
-        showRevisions.update((s) => !s)
+        settings.update(s => ({ ...s, showRevisions: !s.showRevisions }))
     }
 </script>
 
@@ -44,7 +47,7 @@
         </div>
     </div>
     
-    {#if $showRevisions}
+    {#if revisionsVisible}
     <div transition:fade>
         <Revisions {docId} {currentRevision} {revisions} onChangeRevision={changeRevision} />
     </div>
