@@ -5,9 +5,10 @@
     import ViewPage from './components/ViewPage.svelte'
     import Revisions from './components/Revisions.svelte'
 
-    import { editing } from './stores/editor.js'
+    import { editing, showRevisions } from './stores/ui.js'
     import { shortcut } from './actions/shortcut.js'
     import { createRevisionsStore } from './stores/revisions.js'
+    import { fade } from 'svelte/transition'
 
     let docId = 'default'
     let currentRevision = null
@@ -22,9 +23,13 @@
         currentRevision = null
         editing.update((e) => !e)
     }
+
+    function toggleRevisions() {
+        showRevisions.update((s) => !s)
+    }
 </script>
 
-<main>
+<main use:shortcut={{ key: 'h', meta: true, onPress: () => toggleRevisions() }}>
     <Header />
 
     <Sidebar />
@@ -38,8 +43,12 @@
             {/if}
         </div>
     </div>
-
-    <Revisions {docId} {revisions} onChangeRevision={changeRevision} />
+    
+    {#if $showRevisions}
+    <div transition:fade>
+        <Revisions {docId} {currentRevision} {revisions} onChangeRevision={changeRevision} />
+    </div>
+    {/if}
 
 </main>
 
