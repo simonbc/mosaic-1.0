@@ -2,7 +2,7 @@
     import Header from './components/Header.svelte'
     import Sidebar from './components/Sidebar.svelte'
     import Editor from './components/Editor.svelte'
-    import PageViewer from './components/PageViewer.svelte'
+    import ViewPage from './components/ViewPage.svelte'
     import Revisions from './components/Revisions.svelte'
 
     import { editing } from './stores/editor.js'
@@ -20,7 +20,7 @@
             {#if $editing}
               <Editor />
             {:else}
-              <PageViewer />
+              <ViewPage />
             {/if}
         </div>
     </div>
