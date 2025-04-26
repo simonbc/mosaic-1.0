@@ -5,6 +5,7 @@
   import { createPageStore } from '../stores/pages.js'
   import { settings } from '../stores/settings.js'
   import { shortcut } from '../actions/shortcut.js'
+  import { debounce } from '../utils/timing.js'
 
   export let docId
   export let currentRevision
@@ -13,11 +14,42 @@
   const page = createPageStore(docId)
   let content = ''
   let textareaEl
+  let cursorPosition = 0
+  let modified = false
 
   $: previewVisible = $settings.showPreview
   
   function togglePreview() {
     settings.update(s => ({ ...s, showPreview: !s.showPreview }))
+  }
+
+  async function saveRevision() {
+    page.setCursorPosition(cursorPosition)
+    if (!modified) return
+    await revisions.create(content)
+    modified = false
+  }
+  const debouncedSaveRevision = debounce(saveRevision, 500)
+
+  function scrollTextareaToCaret(el) {
+    if (!el) return
+    const { selectionStart } = el
+    // Scroll so caret is visible
+    const lineHeight = parseInt(getComputedStyle(el).lineHeight) || 16
+    const paddingTop = parseInt(getComputedStyle(el).paddingTop) || 0
+    const scrollPos = lineHeight * (el.value.substr(0, selectionStart).split('\n').length - 1)
+    el.scrollTop = scrollPos - paddingTop
+  }
+
+  function updateCursorPosition() {
+    cursorPosition = textareaEl?.selectionStart || 0
+  }
+
+  function handleInput(event) {
+    updateCursorPosition()
+    content = event.target.value
+    modified = true
+    debouncedSaveRevision()
   }
 
   onMount(async () => {
@@ -28,12 +60,19 @@
       content = latest.content ?? ''
     }
     
-    textareaEl?.focus()
+    if (textareaEl) {
+      textareaEl.focus()
+    }
   })
 
-  onDestroy(async () => {
-    await revisions.create(content)
+  onDestroy(() => {
+    debouncedSaveRevision()
   })
+
+  $: if (textareaEl && $page.cursorPosition != null) {
+    textareaEl.setSelectionRange($page.cursorPosition, $page.cursorPosition)
+    scrollTextareaToCaret(textareaEl)
+  }
 </script>
 
 <main
@@ -45,6 +84,9 @@
       bind:this={textareaEl}
       bind:value={content}
       placeholder="Start writing..."
+      on:input={handleInput}
+      on:click={updateCursorPosition}
+      on:keyup={updateCursorPosition}
     />
   </div>
   <div class="preview-container" class:hidden={!previewVisible}>
@@ -75,13 +117,14 @@
     overflow-y: auto;
     background: #f9f9f9;
     border-left: 1px solid #ddd;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease;
     opacity: 1;
   }
 
   .preview-container.hidden {
     opacity: 0;
     pointer-events: none;
+    transform: translateY(1rem);
   }
 
   textarea {

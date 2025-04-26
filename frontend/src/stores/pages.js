@@ -7,6 +7,7 @@ export function createPageStore(pageId, { debounceMs = 500 } = {}) {
     createdAt: Date.now(),
     updatedAt: Date.now(),
     published: false,
+    cursorPosition: 0,
   }
 
   const page = writable(defaultPage, (set) => {
@@ -35,5 +36,13 @@ export function createPageStore(pageId, { debounceMs = 500 } = {}) {
     }, debounceMs)
   })
 
-  return page
+  return {
+    subscribe: page.subscribe,
+    reset: () => {
+      page.set({ ...defaultPage, id: pageId })
+    },
+    setCursorPosition: (position) => {
+      page.update((p) => ({ ...p, cursorPosition: position }))
+    },
+  }
 }
