@@ -8,7 +8,7 @@
   import { debounce } from '../utils/timing.js'
 
   export let docId
-  export let currentRevision
+  export let selectedRevision
   export let revisions
 
   const page = createPageStore(docId)
@@ -53,8 +53,8 @@
   }
 
   onMount(async () => {
-    if (currentRevision) {
-      content = currentRevision.content
+    if (selectedRevision) {
+      content = selectedRevision.content
     } else {
       const latest = await revisions.getLatest()
       content = latest.content ?? ''

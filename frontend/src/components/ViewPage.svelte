@@ -4,14 +4,14 @@
 
 
   export let docId
-  export let currentRevision
+  export let selectedRevision
   export let revisions
 
   let content = ''
 
   onMount(async () => {
-    if (currentRevision) {
-      content = currentRevision.content
+    if (selectedRevision) {
+      content = selectedRevision.content || ''
     } else if (docId) {
       const latest = await revisions.getLatest()
       content = latest?.content || ''
@@ -19,8 +19,8 @@
   })
 
   $: {
-    if (currentRevision) {
-      content = currentRevision.content
+    if (selectedRevision) {
+      content = selectedRevision.content || ''
     } else if (docId) {
       revisions.getLatest().then(latest => {
         content = latest?.content || ''

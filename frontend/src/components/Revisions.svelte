@@ -4,10 +4,10 @@
 
   export let docId
   export let onChangeRevision = (rev) => {}
-  export let currentRevision
+  export let selectedRevision
   export let revisions
   
-  let selectedRevision = null
+  let viewedRevision = null
 
   onMount(() => {
     revisions.refresh()
@@ -103,18 +103,18 @@
     {#each $revisions as rev, i}
       <div
         class="revision"
-        class:selected={selectedRevision === rev}
-        on:click={() => { selectedRevision = rev; onChangeRevision(rev); }}
+        class:selected={viewedRevision === rev}
+        on:click={() => { viewedRevision = rev; onChangeRevision(rev); }}
       >
         <div>{formatDate(rev.timestamp)}</div>
         <div class="revision-diff">
-          <span style="color: green;">+{summarizeChange(rev.content, $currentRevision?.content)['+']}</span>
-          <span style="color: red;">−{summarizeChange(rev.content, $currentRevision?.content)['-']}</span>
+          <span style="color: green;">+{summarizeChange(rev.content, $selectedRevision?.content)['+']}</span>
+          <span style="color: red;">−{summarizeChange(rev.content, $selectedRevision?.content)['-']}</span>
         </div>
       </div>
     {/each}
     <div class="restore-button-container">
-      <button class="restore-button" on:click={() => restore(selectedRevision)}>
+      <button class="restore-button" on:click={() => restore(viewedRevision)}>
         Restore revision
       </button>
     </div>

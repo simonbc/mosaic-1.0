@@ -12,18 +12,18 @@
     import { fade } from 'svelte/transition'
 
     let docId = 'default'
-    let currentRevision = null
+    let selectedRevision = null
 
     $: revisionsVisible = $settings.showRevisions
 
     const revisions = createRevisionsStore(docId)
 
     function changeRevision(rev) {
-        currentRevision = rev
+        selectedRevision = rev
     }
 
     function toggleEditing() {
-        currentRevision = null
+        selectedRevision = null
         editing.update((e) => !e)
     }
 
@@ -40,16 +40,16 @@
     <div class="content">
         <div use:shortcut={{ key: 'e', meta: true, onPress: () => toggleEditing() }}>
             {#if $editing}
-                <Editor {docId} {currentRevision} {revisions} />
+                <Editor {docId} {selectedRevision} {revisions} />
             {:else}
-                <ViewPage {docId} {currentRevision} {revisions} />
+                <ViewPage {docId} {selectedRevision} {revisions} />
             {/if}
         </div>
     </div>
     
     {#if revisionsVisible}
     <div transition:fade>
-        <Revisions {docId} {currentRevision} {revisions} onChangeRevision={changeRevision} />
+        <Revisions {docId} {selectedRevision} {revisions} onChangeRevision={changeRevision} />
     </div>
     {/if}
 
