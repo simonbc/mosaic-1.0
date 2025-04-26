@@ -19,14 +19,14 @@
   })
 
   $: {
-    if (selectedRevision) {
-      content = selectedRevision.content || ''
-    } else if (docId) {
-      revisions.getLatest().then(latest => {
-        content = latest?.content || ''
-      })
-    }
+  if (selectedRevision) {
+    content = selectedRevision.content || ''
+  } else if ($revisions.length > 0) {
+    content = $revisions[0].content || ''
+  } else {
+    content = ''
   }
+}
 </script>
 
 <main class="viewer-container">

@@ -3,6 +3,7 @@
   import { marked } from 'marked'
 
   import { createPageStore } from '../stores/pages.js'
+  import { saveDraft, deleteDraft, getDraft } from '../stores/drafts.js'
   import { settings } from '../stores/settings.js'
   import { shortcut } from '../actions/shortcut.js'
   import { debounce } from '../utils/timing.js'
@@ -26,10 +27,15 @@
   async function saveRevision() {
     page.setCursorPosition(cursorPosition)
     if (!modified) return
+    await deleteDraft(docId)
     await revisions.create(content)
     modified = false
   }
   const debouncedSaveRevision = debounce(saveRevision, 500)
+
+  const debouncedSaveDraft = debounce(() => {
+    saveDraft(docId, { content, cursorPosition })
+  }, 500)
 
   function scrollTextareaToCaret(el) {
     if (!el) return
@@ -49,24 +55,31 @@
     updateCursorPosition()
     content = event.target.value
     modified = true
-    debouncedSaveRevision()
+    debouncedSaveDraft()
   }
 
   onMount(async () => {
     if (selectedRevision) {
       content = selectedRevision.content
     } else {
-      const latest = await revisions.getLatest()
-      content = latest.content ?? ''
+      const draft = await getDraft(docId)
+      if (draft) {
+        content = draft.content
+        cursorPosition = draft.cursorPosition ?? 0
+        modified = true
+      } else {
+        const latest = await revisions.getLatest()
+        content = latest?.content ?? ''
+      }
     }
-    
+
     if (textareaEl) {
       textareaEl.focus()
     }
   })
 
   onDestroy(() => {
-    debouncedSaveRevision()
+    saveRevision()
   })
 
   $: if (textareaEl && $page.cursorPosition != null) {
