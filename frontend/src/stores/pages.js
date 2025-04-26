@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store'
 import { getDb } from './utils.js'
+import { debounce } from '../utils/timing.js'
 
 export function createPageStore(pageId, { debounceMs = 500 } = {}) {
   const defaultPage = {
@@ -25,15 +26,15 @@ export function createPageStore(pageId, { debounceMs = 500 } = {}) {
     return () => {}
   })
 
-  let timeout
+  const savePage = debounce(async (value) => {
+    const db = await getDb()
+    const now = Date.now()
+    value.updatedAt = now
+    await db.put('pages', value, pageId)
+  }, debounceMs)
+
   page.subscribe((value) => {
-    clearTimeout(timeout)
-    timeout = setTimeout(async () => {
-      const db = await getDb()
-      const now = Date.now()
-      value.updatedAt = now
-      await db.put('pages', value, pageId)
-    }, debounceMs)
+    savePage(value)
   })
 
   return {
