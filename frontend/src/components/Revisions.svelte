@@ -50,7 +50,12 @@
                 {#each $pageData.revisions as rev}
                     <li>
                     <button on:click={() => handleRreviewRevision(rev)}>
-                        {new Date(rev.createdAt).toLocaleString()}
+                        <span>
+                          {new Date(rev.createdAt).toLocaleString()}
+                          {#if rev.published}
+                            <span class="published-icon" title="Published"></span>
+                          {/if}
+                        </span>
                     </button>
                     </li>
                 {/each}
@@ -112,7 +117,7 @@ button {
     text-align: left;
     width: 100%;
     padding: 0.5rem;
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     cursor: pointer;
     transition: background 0.2s;
 }
@@ -121,7 +126,7 @@ button:hover {
     background: #eee;
 }
 
-.confirm-restore {
+  .confirm-restore {
     background: #fff8dc;
     padding: 1rem;
     border: 1px solid #ccc;
@@ -141,23 +146,33 @@ button:hover {
   }
 
   .toast {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  background: #333;
-  color: #fff;
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  opacity: 0.95;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  animation: fadeInOut 3s forwards;
-}
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    background: #333;
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    opacity: 0.95;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    animation: fadeInOut 3s forwards;
+    }
 
-@keyframes fadeInOut {
-  0% { opacity: 0; transform: translateY(20px); }
-  10% { opacity: 0.95; transform: translateY(0); }
-  90% { opacity: 0.95; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(20px); }
-}
+    @keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(20px); }
+    10% { opacity: 0.95; transform: translateY(0); }
+    90% { opacity: 0.95; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(20px); }
+    }
+
+    .published-icon {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #4caf50;
+    border-radius: 50%;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    }
 </style>

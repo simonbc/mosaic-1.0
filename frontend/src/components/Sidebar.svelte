@@ -49,6 +49,9 @@
           <div class="page-entry">
             <a href="/{page.slug}" on:click|preventDefault={() => gotoPage(page.slug)}>
               {page.title}
+              {#if page.published}
+                <span class="published-icon" title="Published"></span>
+              {/if}
             </a>
             <button class="delete-button" on:click={() => handleDeletePage(page.id)}>✕</button>
           </div>
@@ -161,5 +164,15 @@
     .actions button:hover {
       background: #f3f3f3;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .published-icon {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: #4caf50;
+        border-radius: 50%;
+        margin-left: 0.5rem;
+        vertical-align: middle;
     }
   </style>
