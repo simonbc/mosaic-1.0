@@ -31,3 +31,10 @@ export function slugify(title) {
     .replace(/[^a-z0-9]+/g, '-') // replace non-alphanumerics with hyphens
     .replace(/(^-|-$)+/g, '') // trim starting/ending hyphens
 }
+
+export function deslugify(slug) {
+  if (!slug) return ''
+
+  const spaced = slug.replace(/-/g, ' ')
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1)
+}

@@ -31,18 +31,4 @@
       color: #333;
       padding: 2rem;
     }
-  
-    button {
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      background: none;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-  
-    button:hover {
-      background: #f0f0f0;
-    }
   </style>

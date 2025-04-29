@@ -122,7 +122,6 @@
     flex-direction: column;
     height: 100vh;
     padding: 2rem;
-    background: #fafafa;
     color: #222;
   }
 
