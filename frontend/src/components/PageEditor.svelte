@@ -111,6 +111,7 @@
     />
   </div>
   <div class="preview-container" class:hidden={!previewVisible}>
+    <h1 class="title-preview">{title}</h1>
     {@html marked(content)}
   </div>
 </main>
@@ -119,7 +120,7 @@
 <style>
   main {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     height: 100vh;
     padding: 2rem;
     color: #222;
@@ -168,6 +169,7 @@
 
   .split-container {
     display: flex;
+    width: 100%;
     height: 100vh;
     overflow: hidden;
   }
@@ -175,6 +177,8 @@
   .editor-container {
     width: 50%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
     transition: width 0.3s ease;
   }
 
@@ -184,12 +188,19 @@
 
   .preview-container {
     width: 50%;
-    padding: 1rem;
+    height: 100%;
+    padding: 0 2rem 2rem 2rem;
     overflow-y: auto;
-    background: #f9f9f9;
     border-left: 1px solid #ddd;
     transition: opacity 0.3s ease, transform 0.3s ease;
     opacity: 1;
+  }
+
+  .title-preview {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0 0 1rem 0;
+    
   }
 
   .preview-container.hidden {

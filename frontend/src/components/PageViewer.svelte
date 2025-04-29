@@ -32,7 +32,11 @@
 
   h1 {
     font-size: 2rem;
-    margin-bottom: 1rem;
+    margin: 0 0 1rem;
+  }
+
+  p {
+  
   }
 
   article.content {

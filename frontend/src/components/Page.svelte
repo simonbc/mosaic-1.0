@@ -8,7 +8,8 @@
 
     import { shortcut } from '../actions/shortcut.js'
     import { editing } from '../data/uiStore.js'
-    import { settings } from '../data/settingsStore.js'
+
+    $: showSidebar = !$editing
 
     function toggleEditing() {
         editing.update((e) => !e)
@@ -19,7 +20,7 @@
     
     <Sidebar />
 
-    <div class="content">
+    <div class="content" class:with-sidebar={showSidebar}>
         <div use:shortcut={{ key: 'e', meta: true, onPress: () => toggleEditing() }}>
             {#if $editing}
                 <PageEditor />
@@ -34,15 +35,19 @@
 
 <style>
     main {
-        display: flex;
-        width: 100%;
+        position: relative;
+        width: 100vw;
         height: 100vh;
         overflow: hidden;
     }
 
     .content {
-        flex: 1;
-        padding: 2rem;
-        overflow-y: auto;
+        height: 100vh;
+        transition: margin-left 0.3s ease;
+        margin-left: 0;
+    }
+
+    .content.with-sidebar {
+        margin-left: 250px;
     }
 </style>

@@ -8,7 +8,7 @@
 
     import { currentSlug, startRouting, stopRouting } from './routing.js'
     import { loadPage } from './data/pages.js'
-    import { pageData } from './data/pagesStore.js'
+    import { pageData, pagesLoaded } from './data/pagesStore.js'
 
     let slug
 
@@ -30,13 +30,15 @@
 <main >
     <Header />
 
-    {#if slug}
-        {#if $pageData}
-            <Page />    
+    {#if pagesLoaded }
+        {#if slug }
+            {#if $pageData}
+                <Page />    
+            {:else}
+                <NotFound {slug} />
+            {/if}
         {:else}
-            <NotFound {slug} />
+            <Home />
         {/if}
-    {:else}
-        <Home />
     {/if}
 </main>
