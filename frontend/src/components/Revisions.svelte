@@ -1,122 +1,165 @@
 <script>
-  import { onMount } from 'svelte'
-  import { summarizeChange } from '../utils/diff.js'
+    import { pageData } from '../data/pagesStore.js'
+    import { shortcut } from '../actions/shortcut.js';
+    import { settings } from '../data/settingsStore.js'
+    import { loadPage, updatePage } from '../data/pages.js';
+    import { previewRevision } from '../data/uiStore.js';
+    import { deleteDraft } from '../data/draftsStore.js';
 
-  export let docId
-  export let onChangeRevision = (rev) => {}
-  export let selectedRevision
-  export let revisions
+    let showToast = false;
+    let showConfirmRestore = false;
+
+    $: revisionsVisible = $settings.showRevisions
+
+    function toggleShowRevisions() {
+        settings.update(s => ({ ...s, showRevisions: !s.showRevisions }))
+    }
   
-  let viewedRevision = null
+    function handleRreviewRevision(rev) {
+        previewRevision.set(rev)
+    }
 
-  onMount(() => {
-    revisions.refresh()
-  })
+    async function confirmRestore() {
+        if (!$previewRevision || !$pageData) return;
 
-  async function restore(rev) {
-    const newRev = await revisions.restore(rev)
-    onChangeRevision(newRev)
-  }
+        await updatePage(
+            $pageData.page.id, 
+            {
+                title: $pageData.page.title, // Keep current title
+                content: $previewRevision.content, // Restore old content
+                cursorPosition: 0
+            }
+        );
 
-  function formatDate(ts) {
-    return new Date(ts).toLocaleString()
-  }
+        await loadPage($pageData.page.slug);
+        deleteDraft($pageData.page.id);
+        previewRevision.set(null);
+        showConfirmRestore = false;
+
+        showToast = true;
+        setTimeout(() => {
+            showToast = false;
+        }, 3000);
+    }
 </script>
 
+<aside use:shortcut={{ key: 'h', meta: true, onPress: () => toggleShowRevisions() }}>
+    {#if revisionsVisible}
+        {#if $pageData.revisions.length > 0}
+            <section class="revisions">
+                <h2>Revisions</h2>
+                <ul>
+                {#each $pageData.revisions as rev}
+                    <li>
+                    <button on:click={() => handleRreviewRevision(rev)}>
+                        {new Date(rev.createdAt).toLocaleString()}
+                    </button>
+                    </li>
+                {/each}
+                </ul>
+                {#if $previewRevision}
+                    {#if showConfirmRestore}
+                        <div class="confirm-restore">
+                            <p>Are you sure you want to restore this revision?</p>
+                            <button on:click={confirmRestore}>Yes, Restore</button>
+                            <button on:click={() => showConfirmRestore = false}>Cancel</button>
+                        </div>
+                    {:else}
+                        <button class="restore-button" on:click={() => showConfirmRestore = true}>
+                            Restore this Revision
+                        </button>
+                    {/if}
+                {/if}
+            </section>
+        {:else}
+            <p>No revisions yet.</p>
+        {/if}
+        {#if showToast}
+            <div class="toast">
+                Restored successfully!
+            </div>
+        {/if}
+    {/if}
+</aside>
+
 <style>
-  .revisions {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 260px;
+.revisions {
+    width: 300px; /* <-- fixed width sidebar */
+    background: #f9f9f9;
+    border-left: 1px solid #ddd;
     height: 100vh;
     overflow-y: auto;
-    background: #fafafa;
-    border-left: 1px solid #ccc;
     padding: 1rem;
-    font-family: system-ui, sans-serif;
-    font-size: 0.75rem;
-  }
+    box-sizing: border-box;
+}
 
-  .revisions h2 {
-    margin: 0 0 1rem 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #333;
-  }
+h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
 
-  .revision {
-    margin-left: -0.5rem;
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    margin-bottom: 0.5rem;
+}
+
+button {
+    background: none;
+    border: none;
+    text-align: left;
+    width: 100%;
     padding: 0.5rem;
-    border-radius: 4px;
-    border: 1px solid transparent;
-    transition: background 0.2s, border-color 0.2s;
+    font-size: 0.95rem;
     cursor: pointer;
-  }
+    transition: background 0.2s;
+}
 
-  .revision:hover {
-    background: #f0f0f0;
-    border-color: #ddd;
-  }
+button:hover {
+    background: #eee;
+}
 
-  .revision.selected {
-    background: #e6f0ff;
-  }
-
-  .revision-diff {
-    font-size: 0.7rem;
-    font-weight: 700;
-  }
-
-  .restore-button-container {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    z-index: 1000;
-    width: 260px;
+.confirm-restore {
+    background: #fff8dc;
     padding: 1rem;
-    border-left: 1px solid #ccc;
-    background-color: #fff;
-    display: flex;
-    justify-content: end;
+    border: 1px solid #ccc;
+    margin-top: 1rem;
+    border-radius: 6px;
+  }
+
+  .confirm-restore p {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
+
+  .confirm-restore button {
+    margin-right: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .toast {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background: #333;
+  color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  opacity: 0.95;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  animation: fadeInOut 3s forwards;
 }
 
-.restore-button {
-  background: #555;
-  color: white;
-  padding: 0.6rem 1rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background 0.2s;
-  width: 100%;
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(20px); }
+  10% { opacity: 0.95; transform: translateY(0); }
+  90% { opacity: 0.95; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(20px); }
 }
-
 </style>
-
-<div class="revisions">
-  <h2>Version history</h2>
-  {#if $revisions.length === 0}
-    <p>No revisions yet.</p>
-  {:else}
-    {#each $revisions as rev, i}
-      <div
-        class="revision"
-        class:selected={viewedRevision === rev}
-        on:click={() => { viewedRevision = rev; onChangeRevision(rev); }}
-      >
-        <div>{formatDate(rev.timestamp)}</div>
-        <div class="revision-diff">
-          <span style="color: green;">+{summarizeChange(rev.content, $selectedRevision?.content)['+']}</span>
-          <span style="color: red;">−{summarizeChange(rev.content, $selectedRevision?.content)['-']}</span>
-        </div>
-      </div>
-    {/each}
-    <div class="restore-button-container">
-      <button class="restore-button" on:click={() => restore(viewedRevision)}>
-        Restore revision
-      </button>
-    </div>
-  {/if}
-</div>

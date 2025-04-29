@@ -1,4 +1,3 @@
-// src/stores/settings.js
 import { writable } from 'svelte/store'
 
 const initial = {

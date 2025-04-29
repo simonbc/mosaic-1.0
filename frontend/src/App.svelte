@@ -1,59 +1,42 @@
 <script>
+    import { onMount, onDestroy } from 'svelte'
+
     import Header from './components/Header.svelte'
-    import Sidebar from './components/Sidebar.svelte'
-    import Editor from './components/Editor.svelte'
-    import ViewPage from './components/ViewPage.svelte'
-    import Revisions from './components/Revisions.svelte'
+    import Home from './components/Home.svelte'
+    import Page from './components/Page.svelte'
+    import NotFound from './components/NotFound.svelte'
 
-    import { editing } from './stores/ui.js'
-    import { settings } from './stores/settings.js'
-    import { shortcut } from './actions/shortcut.js'
-    import { createRevisionsStore } from './stores/revisions.js'
-    import { fade } from 'svelte/transition'
+    import { currentSlug, startRouting, stopRouting } from './routing.js'
+    import { loadPage } from './data/pages.js'
+    import { pageData } from './data/pagesStore.js'
 
-    let docId = 'default'
-    let selectedRevision = null
+    let slug
 
-    $: revisionsVisible = $settings.showRevisions
+    $: $currentSlug
+    $: slug = $currentSlug
 
-    const revisions = createRevisionsStore(docId)
+    $:loadPage(slug)
+    
+    onMount(() => {
+        startRouting()
+    })
 
-    function changeRevision(rev) {
-        selectedRevision = rev
-    }
+    onDestroy(() => {
+        stopRouting()
+    })
 
-    function toggleEditing() {
-        selectedRevision = null
-        editing.update((e) => !e)
-    }
-
-    function toggleRevisions() {
-        settings.update(s => ({ ...s, showRevisions: !s.showRevisions }))
-    }
 </script>
 
-<main use:shortcut={{ key: 'h', meta: true, onPress: () => toggleRevisions() }}>
+<main >
     <Header />
 
-    <Sidebar />
-
-    <div class="content">
-        <div use:shortcut={{ key: 'e', meta: true, onPress: () => toggleEditing() }}>
-            {#if $editing}
-                <Editor {docId} {selectedRevision} {revisions} />
-            {:else}
-                <ViewPage {docId} {selectedRevision} {revisions} />
-            {/if}
-        </div>
-    </div>
-    
-    {#if revisionsVisible}
-    <div transition:fade>
-        <Revisions {docId} {selectedRevision} {revisions} onChangeRevision={changeRevision} />
-    </div>
+    {#if slug}
+        {#if $pageData}
+            <Page />    
+        {:else}
+            <NotFound {slug} />
+        {/if}
+    {:else}
+        <Home />
     {/if}
-
 </main>
-
-<style>
-</style>
