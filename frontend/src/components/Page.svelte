@@ -32,12 +32,14 @@
         width: 100vw;
         height: 100vh;
         overflow: hidden;
+        display: flex
     }
 
     .content {
         height: 100vh;
         transition: margin-left 0.3s ease;
         margin-left: 0;
+        flex-grow: 1;
     }
 
     .content.with-sidebar {

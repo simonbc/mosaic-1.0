@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ page.title }}</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 60ch;
+        margin: 4rem auto;
+        padding: 0 1rem;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>{{ page.title }}</h1>
+    {% if page.byline or page.created_at %}
+    <p>
+      <small>
+        <em>
+          {% if page.byline %}posted by {{ page.byline }}{% endif %} {% if
+          page.created_at %} | {{ page.created_at | datetimeformat }}{% endif %}
+        </em>
+      </small>
+    </p>
+    {% endif %}
+    <pre>{{ page.content }}</pre>
+    {% if page.license %}
+    <hr />
+    <footer>
+      <p>
+        <small><em>Licensed under {{ page.license }}</em></small>
+      </p>
+    </footer>
+    {% endif %}
+  </body>
+</html>

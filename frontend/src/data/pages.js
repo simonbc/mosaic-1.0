@@ -28,6 +28,7 @@ export function createPage(title) {
       pageId,
       content: '',
       createdAt: timestamp,
+      published: false,
     },
   }))
 
@@ -41,6 +42,7 @@ export function createPage(title) {
       updatedAt: timestamp,
       latestRevisionId: revisionId,
       cursorPosition: 0,
+      published: false,
     },
   }))
 
@@ -153,4 +155,16 @@ export async function deletePage(pageId) {
     }
     return updated
   })
+}
+
+export async function publishPage(pageId, revisionId) {
+  pages.update((current) => ({
+    ...current,
+    [pageId]: { ...current[pageId], published: true },
+  }))
+
+  revisions.update((current) => ({
+    ...current,
+    [revisionId]: { ...current[revisionId], published: true },
+  }))
 }

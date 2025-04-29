@@ -9,8 +9,6 @@
     let showToast = false;
     let showConfirmRestore = false;
 
-    $: revisionsVisible = $settings.showRevisions
-
     function toggleShowRevisions() {
         settings.update(s => ({ ...s, showRevisions: !s.showRevisions }))
     }
@@ -44,10 +42,10 @@
 </script>
 
 <aside use:shortcut={{ key: 'h', meta: true, onPress: () => toggleShowRevisions() }}>
-    {#if revisionsVisible}
+    {#if $settings.showRevisions }
         {#if $pageData.revisions.length > 0}
             <section class="revisions">
-                <h2>Revisions</h2>
+                <h2>Version history</h2>
                 <ul>
                 {#each $pageData.revisions as rev}
                     <li>
