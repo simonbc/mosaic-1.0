@@ -2,6 +2,7 @@
     import { onMount, onDestroy } from 'svelte'
 
     import Header from './components/Header.svelte'
+    import Sidebar from './components/Sidebar.svelte'
     import Home from './components/Home.svelte'
     import Page from './components/Page.svelte'
     import NotFound from './components/NotFound.svelte'
@@ -29,6 +30,8 @@
 
 <main >
     <Header />
+
+    <Sidebar />
 
     {#if pagesLoaded }
         {#if slug }

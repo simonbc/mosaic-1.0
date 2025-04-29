@@ -1,17 +1,17 @@
 <script>
-    import { createPage } from '../data/pages.js';
+    import { createPage, loadPage } from '../data/pages.js';
     import { slugify, navigateTo } from '../routing.js';
+    import { editing } from '../data/uiStore.js';
   
-    function handleCreatePage() {
-      const title = prompt('What’s the title of your new page?');
-      if (!title) return;
-  
-      try {
+    async function handleCreatePage() {
+        const title = prompt('What’s the title of your new page?');
+        if (!title) return;
+
+        const slug = slugify(title);
         createPage(title);
-        navigateTo(slugify(title));
-      } catch (err) {
-        alert('Error creating page: ' + err.message);
-      }
+        await loadPage(slug);
+        editing.set(true);
+        navigateTo(slug);
     }
   </script>
   

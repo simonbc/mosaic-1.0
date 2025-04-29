@@ -1,15 +1,10 @@
 <script>
-    import { fade } from 'svelte/transition'
-
-    import Sidebar from './Sidebar.svelte'
     import PageEditor from './PageEditor.svelte'
     import PageViewer from './PageViewer.svelte'
     import Revisions from './Revisions.svelte'
 
     import { shortcut } from '../actions/shortcut.js'
-    import { editing } from '../data/uiStore.js'
-
-    $: showSidebar = !$editing
+    import { editing, showSidebar } from '../data/uiStore.js'
 
     function toggleEditing() {
         editing.update((e) => !e)
@@ -17,10 +12,8 @@
 </script>
 
 <main>
-    
-    <Sidebar />
 
-    <div class="content" class:with-sidebar={showSidebar}>
+    <div class="content" class:with-sidebar={$showSidebar}>
         <div use:shortcut={{ key: 'e', meta: true, onPress: () => toggleEditing() }}>
             {#if $editing}
                 <PageEditor />

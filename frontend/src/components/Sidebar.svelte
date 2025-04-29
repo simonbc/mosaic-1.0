@@ -19,7 +19,7 @@
         if (!title) return;
 
         const slug = slugify(title);
-        const pageId = createPage(title);
+        createPage(title);
         await loadPage(slug);
         editing.set(true);
         navigateTo(slug);
