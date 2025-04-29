@@ -136,3 +136,21 @@ export async function loadPage(slug) {
 
   return pageData
 }
+
+export async function deletePage(pageId) {
+  pages.update((current) => {
+    const updated = { ...current }
+    delete updated[pageId]
+    return updated
+  })
+
+  revisions.update((current) => {
+    const updated = { ...current }
+    for (const revId in updated) {
+      if (updated[revId].pageId === pageId) {
+        delete updated[revId]
+      }
+    }
+    return updated
+  })
+}
