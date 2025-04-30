@@ -12,11 +12,16 @@
     import { pageData, pagesLoaded } from './data/pagesStore.js'
 
     let slug
+    let pageDataLoaded = false
 
     $: $currentSlug
     $: slug = $currentSlug
 
-    $:loadPage(slug)
+    $:loadPage(slug).then(() => {
+        if (slug) {
+            pageDataLoaded = true
+        }
+    })
     
     onMount(() => {
         startRouting()
@@ -35,10 +40,12 @@
 
     {#if pagesLoaded }
         {#if slug }
-            {#if $pageData}
-                <Page />    
-            {:else}
-                <NotFound {slug} />
+            {#if pageDataLoaded}
+                {#if $pageData}
+                    <Page />
+                {:else}
+                    <NotFound {slug} />
+                {/if}
             {/if}
         {:else}
             <Home />
