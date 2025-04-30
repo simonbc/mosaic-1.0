@@ -87,7 +87,7 @@
 
 <style>
 .revisions {
-    width: 300px; /* <-- fixed width sidebar */
+    width: 250px; /* <-- fixed width sidebar */
     background: #f9f9f9;
     border-left: 1px solid #ddd;
     height: 100vh;
@@ -167,12 +167,12 @@ button:hover {
     }
 
     .published-icon {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    background: #4caf50;
-    border-radius: 50%;
-    margin-left: 0.5rem;
-    vertical-align: middle;
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: #4caf50;
+        border-radius: 50%;
+        margin-left: 0.5rem;
+        vertical-align: middle;
     }
 </style>
