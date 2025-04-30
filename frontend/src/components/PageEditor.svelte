@@ -39,10 +39,10 @@
 
   async function savePage() {
     if (title.trim() !== $pageData.page.title || content.trim() !== $pageData.revision.content) {
-      console.log('Cursor position:', cursorPosition)
       updatePage($pageData.page.id, { title, content, cursorPosition });
       await deleteDraft($pageData.id)
       await loadPage($pageData.page.slug);
+      previewRevision.set(null)
     }
   }
 
@@ -60,36 +60,35 @@
 }, 500);
 
   function handleInput(event) {
-    content = event.target.value
-    debouncedSaveDraft()
-    saveCursorPosition()
+      content = event.target.value
+      debouncedSaveDraft()
+      saveCursorPosition()
   }
 
   onMount(() => {
-  if ($pageData) {
-    const existingDraft = getDraft($pageData.page.id);
-    if (existingDraft) {
-      content = existingDraft.content;
-      cursorPosition = existingDraft.cursorPosition ?? 0
+    if ($previewRevision) {
+        content = $previewRevision.content;
+        cursorPosition = 0;
     } else {
-      content = $pageData.revision.content;
-      cursorPosition = $pageData.cursorPosition ?? 0
+        const existingDraft = getDraft($pageData.page.id);
+        if (existingDraft) {
+            content = existingDraft.content;
+            cursorPosition = existingDraft.cursorPosition ?? 0
+        } else {
+            content = $pageData.revision.content;
+            cursorPosition = $pageData.cursorPosition ?? 0
+        }
     }
-  }
-});
-
-  onMount(async () => {
-    previewRevision.set(null)
     
 
     if (textareaEl) {
-      textareaEl.focus()
+        textareaEl.focus()
     }
-  })
+});
 
-  onDestroy(() => {
-    savePage()
-  })
+    onDestroy(() => {
+        savePage()
+    })
 </script>
 
 <main
