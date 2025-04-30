@@ -34,6 +34,7 @@
     }
     licenseError = '';
     onSubmit()
+    showPublishDialog.set(false)
   }
 </script>
 

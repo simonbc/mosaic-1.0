@@ -9,13 +9,14 @@
 
     import { currentSlug, startRouting, stopRouting } from './routing.js'
     import { loadPage } from './data/pages.js'
-    import { pageData, pagesLoaded } from './data/pagesStore.js'
+    import { pageData, pages, pagesLoaded } from './data/pagesStore.js'
 
     let slug
     let pageDataLoaded = false
 
     $: $currentSlug
     $: slug = $currentSlug
+    $: hasPages = Object.values($pages).length > 0
 
     $:loadPage(slug).then(() => {
         if (slug) {
@@ -36,9 +37,11 @@
 <main >
     <Header />
 
-    <Sidebar />
+    {#if hasPages}
+        <Sidebar />
+    {/if}
 
-    {#if pagesLoaded }
+    {#if pagesLoaded}
         {#if slug }
             {#if pageDataLoaded}
                 {#if $pageData}

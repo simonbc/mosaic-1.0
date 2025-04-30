@@ -4,7 +4,8 @@
   import PublishDialog from './PublishDialog.svelte';
   import { pageData } from '../data/pagesStore.js'
   import { previewRevision, showPublishDialog } from '../data/uiStore.js'
-  import { publishPage } from '../data/pages.js';
+  import { publishPage, loadPage } from '../data/pages.js';
+
 
   let byline = '';
   let license = 'CC-BY';
@@ -34,6 +35,7 @@
     }
 
     publishPage(page.id, revision.id)
+    await loadPage($pageData.page.slug);
   }
 
   function toggleShowDialog() {
@@ -45,7 +47,9 @@
   {#if $pageData}
     <div class="header">
       <h1 class="page-title">{$pageData.page.title}</h1>
-      <button class="publish-button" on:click={() => toggleShowDialog()}>Publish</button>
+      {#if !$previewRevision}
+        <button class="publish-button" on:click={() => toggleShowDialog()}>Publish</button>
+      {/if}
     </div>
     <PublishDialog
       bind:byline
@@ -77,7 +81,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
   }
 
   .page-title {
@@ -92,7 +95,6 @@
     font-size: 1.1rem;
     line-height: 1.5;
     overflow-y: auto;
-    padding-top: 1rem;
   }
 
   .publish-button {
@@ -108,5 +110,9 @@
   .publish-button:hover {
     background: #f3f3f3;
   }
+
+  .publish-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 </style>
-  

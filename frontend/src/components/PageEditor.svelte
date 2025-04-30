@@ -109,10 +109,10 @@
       on:input={handleInput}
     />
   </div>
-  <div class="preview-container" class:hidden={!previewVisible}>
-    <h1 class="title-preview">{title}</h1>
-    {@html marked(content)}
-  </div>
+    <div class="preview-container" class:hidden={!previewVisible}>
+        <h1 class="title-preview">{title}</h1>
+        {@html marked(content)}
+    </div>
 </main>
 
 
@@ -134,6 +134,7 @@
     background: transparent;
     width: 100%;
     font-family: inherit;
+    line-height: 1.6
   }
 
   textarea {
@@ -141,12 +142,12 @@
     width: 100%;
     height: 100%;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    font-size: 1.1rem;
+    font-size: 1rem;
     border: none;
     outline: none;
     resize: none;
     background: transparent;
-    padding: 1rem 0;
+    padding: 0 3rem 1rem 0;
     line-height: 1.5;
   }
 
@@ -203,6 +204,7 @@
   }
 
   .preview-container.hidden {
+    width: 0;
     opacity: 0;
     pointer-events: none;
     transform: translateY(1rem);
