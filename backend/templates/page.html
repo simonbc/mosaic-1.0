@@ -25,7 +25,7 @@
       </small>
     </p>
     {% endif %}
-    <pre>{{ page.content }}</pre>
+    <div>{{ page.revision.content | markdown | safe }}</div>
     {% if page.license %}
     <hr />
     <footer>
