@@ -5,22 +5,40 @@
   import { pageData } from '../data/pagesStore.js'
   import { previewRevision, showPublishDialog } from '../data/uiStore.js'
   import { publishPage, loadPage } from '../data/pages.js';
+  import {
+  getOrCreateKeyPair,
+  signHandle,
+  exportPublicKeyHex
+} from '../utils/crypto.js'
 
-
+  let handle = '';
   let byline = '';
   let license = 'CC-BY';
+
+  $: handle = $pageData.page.handle
 
   export async function handlePublish() {
     const { page, revision } = $pageData;
 
+    const { privateKeyJwk, publicKeyJwk } = await getOrCreateKeyPair();
+
+    const publicHex = await exportPublicKeyHex(publicKeyJwk);
+    console.log('Using public key:', publicHex);
+
+    const signature = await signHandle(handle, privateKeyJwk);
+    console.log('Generated signature:', signature);
+
     const payload = {
-      title: page.title,
+      handle,
       slug: page.slug,
+      title: page.title,
       content: revision.content,
       created_at: page.createdAt,
       updated_at: Date.now(),
       byline,
-      license
+      license,
+      signature,
+      public_key: publicHex
     };
 
     const res = await fetch('http://localhost:8000/publish', {
@@ -34,7 +52,7 @@
       return;
     }
 
-    publishPage(page.id, revision.id)
+    publishPage(page.id, revision.id, handle, byline, license);
     await loadPage($pageData.page.slug);
   }
 
@@ -52,9 +70,10 @@
       {/if}
     </div>
     <PublishDialog
+      bind:handle
       bind:byline
       bind:license
-      onSubmit={() => handlePublish({ byline, license })}
+      onSubmit={() => handlePublish()}
       show={showPublishDialog}
     />
     <article class="content">

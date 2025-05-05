@@ -1,38 +1,47 @@
 <script>
-    import { showPublishDialog } from '../data/uiStore.js'
+  import { showPublishDialog } from '../data/uiStore.js'
+  import { pageData } from '../data/pagesStore.js'
 
-    export let onSubmit = () => {};
-    export let byline = '';
-    export let license = 'CC-BY';
+  export let onSubmit = () => {};
+  export let handle = '';
+  export let byline = '';
+  export let license = 'CC-BY';
 
-    let licenseError = '';
+  let handleError = '';
+  let licenseError = '';
 
-    const licenses = [
-        'CC0',
-        'CC-BY',
-        'CC-BY-SA',
-        'CC-BY-ND',
-        'CC-BY-NC',
-        'CC-BY-NC-SA',
-        'CC-BY-NC-ND'
-    ];
+  const licenses = [
+      'CC0',
+      'CC-BY',
+      'CC-BY-SA',
+      'CC-BY-ND',
+      'CC-BY-NC',
+      'CC-BY-NC-SA',
+      'CC-BY-NC-ND'
+  ];
 
-    const licenseDescriptions = {
-        'CC0': 'No rights reserved — public domain.',
-        'CC-BY': 'Credit must be given to the creator.',
-        'CC-BY-SA': 'Credit and share alike.',
-        'CC-BY-ND': 'Credit, no derivatives allowed.',
-        'CC-BY-NC': 'Credit, non-commercial use only.',
-        'CC-BY-NC-SA': 'Credit, non-commercial, share alike.',
-        'CC-BY-NC-ND': 'Credit, non-commercial, no derivatives.'
-    };
+  const licenseDescriptions = {
+      'CC0': 'No rights reserved — public domain.',
+      'CC-BY': 'Credit must be given to the creator.',
+      'CC-BY-SA': 'Credit and share alike.',
+      'CC-BY-ND': 'Credit, no derivatives allowed.',
+      'CC-BY-NC': 'Credit, non-commercial use only.',
+      'CC-BY-NC-SA': 'Credit, non-commercial, share alike.',
+      'CC-BY-NC-ND': 'Credit, non-commercial, no derivatives.'
+  };
 
   function handleSubmit() {
+    if (!handle) {
+      handleError = 'Required';
+      return;
+    }
     if (!license) {
       licenseError = 'Required';
       return;
     }
+    handleError = '';
     licenseError = '';
+
     onSubmit()
     showPublishDialog.set(false)
   }
@@ -41,6 +50,14 @@
 {#if $showPublishDialog}
   <div class="overlay" on:click={() => showPublishDialog.set(false)}>
     <div class="publish-dialog" on:click|stopPropagation>
+      {handle}
+      <label>
+        Handle:
+        <input bind:value={handle} />
+      </label>
+      {#if !handle && handleError}
+        <p class="error">{handleError}</p>
+      {/if}
       <label>
         Byline:
         <input bind:value={byline} placeholder="Anonymous or your name" />

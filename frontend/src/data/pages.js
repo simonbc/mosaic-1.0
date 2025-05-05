@@ -157,10 +157,10 @@ export async function deletePage(pageId) {
   })
 }
 
-export async function publishPage(pageId, revisionId) {
+export async function publishPage(pageId, revisionId, handle, byline, license) {
   pages.update((current) => ({
     ...current,
-    [pageId]: { ...current[pageId], published: true },
+    [pageId]: { ...current[pageId], handle, byline, license, published: true },
   }))
 
   revisions.update((current) => ({

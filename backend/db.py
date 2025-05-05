@@ -1,12 +1,27 @@
+from fastapi import HTTPException
 import sqlite3
 from schema import PublishRequest
+
+from utils.crypto import verify_signature
+
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives import hashes
+from cryptography.exceptions import InvalidSignature
 
 conn = sqlite3.connect("published.db")
 cursor = conn.cursor()
 
 cursor.execute("""
+CREATE TABLE IF NOT EXISTS handles (
+    handle TEXT PRIMARY KEY,
+    public_key TEXT
+)
+""")
+
+cursor.execute("""
 CREATE TABLE IF NOT EXISTS pages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    handle TEXT,
     slug TEXT,
     title TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -14,6 +29,10 @@ CREATE TABLE IF NOT EXISTS pages (
     byline TEXT,
     license TEXT
 )
+""")
+
+cursor.execute("""
+CREATE UNIQUE INDEX IF NOT EXISTS idx_handle_slug ON pages(handle, slug)
 """)
 
 cursor.execute("""
@@ -38,9 +57,10 @@ def save_page(page: PublishRequest):
     else:
         cursor.execute("""
         INSERT INTO pages (
-            slug, title, byline, license
-        ) VALUES (?, ?, ?, ?)
+            handle, slug, title, byline, license
+        ) VALUES (?, ?, ?, ?, ?)
         """, (
+            page.handle,
             page.slug,
             page.title,
             page.byline,
@@ -66,33 +86,35 @@ def save_page(page: PublishRequest):
     }
     save_revision(revision)
 
-def get_page_by_slug(slug: str):
+def get_page(handle: str, slug: str):
     cursor.execute("""
     SELECT
-        p.slug, p.title, p.created_at, p.updated_at, p.byline, p.license,
+        p.handle, p.slug, p.title, p.created_at, p.updated_at, p.byline, p.license,
         r.id, r.content, r.created_at
     FROM pages p
     JOIN revisions r ON r.page_id = p.id
-    WHERE LOWER(p.slug) = LOWER(?)
+    WHERE LOWER(p.handle) = LOWER(?)
+    AND LOWER(p.slug) = LOWER(?)
     AND r.created_at = (
         SELECT MAX(created_at)
         FROM revisions
         WHERE page_id = p.id
     )
-    """, (slug,))
+    """, (handle, slug,))
     row = cursor.fetchone()
     if row:
         return {
-            "slug": row[0],
-            "title": row[1],
-            "created_at": row[2],
-            "updated_at": row[3],
-            "byline": row[4],
-            "license": row[5],
+            "handle": row[0],
+            "slug": row[1],
+            "title": row[2],
+            "created_at": row[3],
+            "updated_at": row[4],
+            "byline": row[5],
+            "license": row[6],
             "revision": {
-                "id": row[6],
-                "content": row[7],
-                "created_at": row[8]
+                "id": row[7],
+                "content": row[8],
+                "created_at": row[9]
             }
         }
     return None
@@ -122,3 +144,24 @@ def get_revisions_by_page_id(page_id: str):
         "content": row[1],
         "created_at": row[2]
     } for row in rows]
+
+
+def verify_or_register_handle(payload):
+    message = payload.handle.encode('utf-8')
+
+    cursor.execute("SELECT public_key FROM handles WHERE LOWER(handle) = LOWER(?)", (payload.handle,))
+    existing = cursor.fetchone()
+
+    if existing:
+        stored_public_key = existing[0]
+        if not verify_signature(message, payload.signature, stored_public_key):
+            raise HTTPException(status_code=403, detail="Invalid signature")
+    else:
+        if not payload.public_key:
+            raise HTTPException(status_code=400, detail="Missing public key for new handle")
+
+        cursor.execute(
+            "INSERT INTO handles (handle, public_key) VALUES (?, ?)",
+            (payload.handle.lower(), payload.public_key)
+        )
+        conn.commit()

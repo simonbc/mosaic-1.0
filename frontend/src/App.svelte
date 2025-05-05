@@ -18,7 +18,7 @@
     $: slug = $currentSlug
     $: hasPages = Object.values($pages).length > 0
 
-    $:loadPage(slug).then(() => {
+    $: loadPage(slug).then(() => {
         if (slug) {
             pageDataLoaded = true
         }

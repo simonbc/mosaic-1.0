@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from markdown import markdown
 
-from db import get_page_by_slug, save_page
+from db import get_page, save_page, verify_or_register_handle
 from schema import PublishRequest
 
 app = FastAPI()
@@ -35,16 +35,13 @@ templates.env.filters['markdown'] = markdown
 
 @app.post("/publish")
 async def publish_page(payload: PublishRequest):
-    try:
-        save_page(payload)
-        return {"status": "ok", "slug": payload.slug}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    verify_or_register_handle(payload)
+    save_page(payload)
+    return {"status": "ok"}
 
-
-@app.get("/{slug}", response_class=HTMLResponse)
-async def serve_page(request: Request, slug: str):
-    page = get_page_by_slug(slug)
+@app.get("/{handle}/{slug}", response_class=HTMLResponse)
+async def serve_page(request: Request, handle: str, slug: str):
+    page = get_page(handle, slug)
     if not page:
         raise HTTPException(status_code=404, detail="Page not found")
     return templates.TemplateResponse("page.html", {"request": request, "page": page})
