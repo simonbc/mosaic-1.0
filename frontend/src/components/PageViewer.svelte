@@ -16,6 +16,7 @@
   let license = 'CC-BY';
 
   $: handle = $pageData.page.handle
+  $: byline = $pageData.page.byline
 
   export async function handlePublish() {
     const { page, revision } = $pageData;
@@ -82,6 +83,15 @@
                 ? $previewRevision.content
                 : $pageData.revision.content
       )}
+      {#if $pageData?.revision?.published}
+      <p class="published-link">
+        Published at:
+        <a href={`http://localhost:8000/${$pageData.page.handle}/${$pageData.page.slug}`}
+           target="_blank" rel="noopener">
+          mosaic.pub/{$pageData.page.handle}/{$pageData.page.slug}
+        </a>
+      </p>
+    {/if}
     </article>
   {/if}
 </main>
@@ -133,5 +143,20 @@
   .publish-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+  .published-link {
+    font-size: 0.9em;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: #f9f9f9;
+    border-left: 4px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .published-link a {
+    text-decoration: underline;
+    color: #333;
+    font-weight: 500;
   }
 </style>
