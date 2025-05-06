@@ -10,32 +10,31 @@ export async function maybeHandleRiff(slug) {
   const segments = slug.split('/')
   if (segments[0] !== 'r' || segments.length !== 3) return
 
-  const [_, handle, sourceSlug] = segments
+  const [_, handle, parentSlug] = segments
   handled = true
 
   try {
     const res = await fetch(
-      `http://localhost:8000/api/page/${handle}/${sourceSlug}`
+      `http://localhost:8000/api/page/${handle}/${parentSlug}`
     )
     if (!res.ok) throw new Error('Page not found')
 
     const source = await res.json()
     const newSlug = `r-${Date.now()}`
-    const createdAt = Date.now()
 
     const page = {
       slug: newSlug,
       title: `Riff on: ${source.title}`,
       license: source.license,
       byline: '',
-      createdAt,
-      updatedAt: createdAt,
-      riffedFrom: { handle, slug: sourceSlug },
+      riffedFrom: { handle, slug: parentSlug },
+      cursorPosition: 0,
+      published: false,
     }
 
     const revision = {
       content: '',
-      createdAt,
+      published: false,
     }
 
     await createPage(page, revision)

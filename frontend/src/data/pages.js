@@ -4,23 +4,37 @@ import { revisions, revisionsLoaded } from './revisionsStore.js'
 import { slugify } from '../routing.js'
 
 export function createPage(page, revision) {
-  revisions.update((current) => ({
-    ...current,
-    [revision.id]: revision,
-  }))
-
-  pages.update((current) => ({
-    ...current,
-    [page.id]: page,
-  }))
-}
-
-export function createPageFromTitle(title) {
-  const slug = slugify(title)
   const pageId = crypto.randomUUID()
   const revisionId = crypto.randomUUID()
   const timestamp = Date.now()
 
+  revisions.update((current) => ({
+    ...current,
+    [revisionId]: {
+      ...revision,
+      id: revisionId,
+      pageId,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    },
+  }))
+
+  pages.update((current) => ({
+    ...current,
+    [pageId]: {
+      ...page,
+      id: pageId,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      latestRevisionId: revisionId,
+    },
+  }))
+
+  return pageId
+}
+
+export function createPageFromTitle(title) {
+  const slug = slugify(title)
   const existingPages = Object.values(get(pages))
   const existingSlug = existingPages.find((p) => p.slug === slug)
   if (existingSlug) {
@@ -28,25 +42,18 @@ export function createPageFromTitle(title) {
   }
 
   const page = {
-    id: pageId,
     slug,
     title,
-    createdAt: timestamp,
-    updatedAt: timestamp,
-    latestRevisionId: revisionId,
     cursorPosition: 0,
     published: false,
   }
 
   const revision = {
-    id: revisionId,
-    pageId,
     content: '',
-    createdAt: timestamp,
     published: false,
   }
 
-  createPage(page, revision)
+  const pageId = createPage(page, revision)
 
   return pageId
 }
