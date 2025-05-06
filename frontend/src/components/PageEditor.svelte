@@ -108,6 +108,15 @@
       placeholder="Start writing..."
       on:input={handleInput}
     />
+    {#if $pageData?.page?.riffedFrom}
+      <p style="font-size: 0.9em; color: #555; margin-bottom: 1rem;">
+        Riffing on
+        <a href="http://localhost:8000/{$pageData.page.riffedFrom.handle}/{$pageData.page.riffedFrom.slug}"
+          target="_blank" style="text-decoration: underline;">
+          mosaic.pub/{$pageData.page.riffedFrom.handle}/{$pageData.page.riffedFrom.slug}
+        </a>
+      </p>
+    {/if}
   </div>
     <div class="preview-container" class:hidden={!previewVisible}>
         <h1 class="title-preview">{title}</h1>
