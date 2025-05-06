@@ -1,5 +1,5 @@
 <script>
-    import { createPage } from '../data/pages.js';
+    import { createPageFromTitle } from '../data/pages.js';
     import { loadPage } from '../data/pages.js';
     import { editing } from '../data/uiStore.js';
     import { deslugify } from '../routing.js';
@@ -8,7 +8,7 @@
   
     async function createNewPage() {
       const title = deslugify(slug);
-      const pageId = createPage(title);
+      const pageId = createPageFromTitle(title);
       await loadPage(slug);
       editing.set(true);
     }

@@ -1,5 +1,5 @@
 <script>
-  import { createPage, loadPage } from '../data/pages.js';
+  import { createPageFromTitle, loadPage } from '../data/pages.js';
   import { pages } from '../data/pagesStore.js'
   import { slugify, navigateTo } from '../routing.js';
   import { editing } from '../data/uiStore.js';
@@ -11,7 +11,7 @@
       if (!title) return;
 
       const slug = slugify(title);
-      createPage(title);
+      createPageFromTitle(title);
       await loadPage(slug);
       editing.set(true);
       navigateTo(slug);

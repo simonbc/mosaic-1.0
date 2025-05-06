@@ -3,13 +3,19 @@ import { pageData, pages, pagesLoaded } from './pagesStore.js'
 import { revisions, revisionsLoaded } from './revisionsStore.js'
 import { slugify } from '../routing.js'
 
-/**
- * Create a new page with an initial empty revision.
- * @param {string} title - Title of the page.
- * @param {string} slug - URL-safe slug (must be unique).
- * @returns {string} pageId - The new page's internal ID.
- */
-export function createPage(title) {
+export function createPage(page, revision) {
+  revisions.update((current) => ({
+    ...current,
+    [revision.id]: revision,
+  }))
+
+  pages.update((current) => ({
+    ...current,
+    [page.id]: page,
+  }))
+}
+
+export function createPageFromTitle(title) {
   const slug = slugify(title)
   const pageId = crypto.randomUUID()
   const revisionId = crypto.randomUUID()
@@ -21,30 +27,26 @@ export function createPage(title) {
     throw new Error(`Slug "${slug}" already exists.`)
   }
 
-  revisions.update((current) => ({
-    ...current,
-    [revisionId]: {
-      id: revisionId,
-      pageId,
-      content: '',
-      createdAt: timestamp,
-      published: false,
-    },
-  }))
+  const page = {
+    id: pageId,
+    slug,
+    title,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    latestRevisionId: revisionId,
+    cursorPosition: 0,
+    published: false,
+  }
 
-  pages.update((current) => ({
-    ...current,
-    [pageId]: {
-      id: pageId,
-      slug,
-      title,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-      latestRevisionId: revisionId,
-      cursorPosition: 0,
-      published: false,
-    },
-  }))
+  const revision = {
+    id: revisionId,
+    pageId,
+    content: '',
+    createdAt: timestamp,
+    published: false,
+  }
+
+  createPage(page, revision)
 
   return pageId
 }

@@ -47,9 +47,9 @@ CREATE TABLE IF NOT EXISTS revisions (
 
 conn.commit()
 
-def save_page(page: PublishRequest):
+def save_page(handle: str, slug: str, page: PublishRequest):
     # Check if the page already exists
-    cursor.execute("SELECT id FROM pages WHERE LOWER(slug) = LOWER(?)", (page.slug,))
+    cursor.execute("SELECT id FROM pages WHERE LOWER(slug) = LOWER(?)", (slug,))
     existing = cursor.fetchone()
 
     if existing:
@@ -60,8 +60,8 @@ def save_page(page: PublishRequest):
             handle, slug, title, byline, license
         ) VALUES (?, ?, ?, ?, ?)
         """, (
-            page.handle,
-            page.slug,
+            handle,
+            slug,
             page.title,
             page.byline,
             page.license
@@ -146,22 +146,22 @@ def get_revisions_by_page_id(page_id: str):
     } for row in rows]
 
 
-def verify_or_register_handle(payload):
-    message = payload.handle.encode('utf-8')
+def verify_or_register_handle(handle, public_key, signature):
+    message = handle.encode('utf-8')
 
-    cursor.execute("SELECT public_key FROM handles WHERE LOWER(handle) = LOWER(?)", (payload.handle,))
+    cursor.execute("SELECT public_key FROM handles WHERE LOWER(handle) = LOWER(?)", (handle,))
     existing = cursor.fetchone()
 
     if existing:
         stored_public_key = existing[0]
-        if not verify_signature(message, payload.signature, stored_public_key):
+        if not verify_signature(message, signature, stored_public_key):
             raise HTTPException(status_code=403, detail="Invalid signature")
     else:
-        if not payload.public_key:
+        if not public_key:
             raise HTTPException(status_code=400, detail="Missing public key for new handle")
 
         cursor.execute(
             "INSERT INTO handles (handle, public_key) VALUES (?, ?)",
-            (payload.handle.lower(), payload.public_key)
+            (handle.lower(), public_key)
         )
         conn.commit()

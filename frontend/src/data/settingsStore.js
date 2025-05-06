@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store'
 
 const initial = {
-  showPreview: true,
+  showPreview: false,
   showRevisions: false,
 }
 

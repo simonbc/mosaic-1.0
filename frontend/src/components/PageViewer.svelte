@@ -41,7 +41,7 @@
       public_key: publicHex
     };
 
-    const res = await fetch('http://localhost:8000/publish', {
+    const res = await fetch(`http://localhost:8000/api/page/${handle}/${page.slug}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)

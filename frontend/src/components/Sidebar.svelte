@@ -4,7 +4,7 @@
 
     import { pages } from '../data/pagesStore.js';
     import { currentSlug, navigateTo, slugify } from '../routing.js';
-    import { loadPage, createPage, deletePage} from '../data/pages.js';
+    import { loadPage, createPageFromTitle, deletePage} from '../data/pages.js';
     import { editing } from '../data/uiStore.js';
   
     let allPages = [];
@@ -20,7 +20,7 @@
         if (!title) return;
 
         const slug = slugify(title);
-        createPage(title);
+        createPageFromTitle(title);
         await loadPage(slug);
         editing.set(true);
         navigateTo(slug);
