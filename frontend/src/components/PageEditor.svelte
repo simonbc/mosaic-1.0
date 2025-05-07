@@ -16,6 +16,11 @@
   let textareaEl
   let cursorPosition = null
 
+  // Dynamically set textarea placeholder based on whether this is a riff page
+  $: placeholderText = $pageData.page?.riffedFrom
+    ? '> Start your riff here...'
+    : '> Start writing...'
+
   $: previewVisible = $settings.showPreview
 
   $: if (textareaEl && $pageData.page.cursorPosition != null) {
@@ -96,6 +101,21 @@
   use:shortcut={{ key: 'p', meta: true, onPress: togglePreview }}
 >
   <div class="editor-container" class:full={!previewVisible}>
+    {#if $pageData.page?.riffedFrom}
+      <p class="riff-info">
+        <span>
+          You’re riffing on 
+          <em>"{$pageData.page.riffedFrom.title}"</em> 
+          by 
+          <strong>@{$pageData.page.riffedFrom.byline || $pageData.page.riffedFrom.handle}</strong>.
+          Your words will live on their own page.
+        </span>
+        <a href={`http://localhost:8000/${$pageData.page.riffedFrom.handle}/${$pageData.page.riffedFrom.slug}`}
+          target="_blank" rel="noopener" class="view-original-link">
+          View original →
+        </a>
+      </p>
+    {/if}
     <input
       type="text"
       bind:value={title}
@@ -105,17 +125,15 @@
     <textarea
       bind:this={textareaEl}
       bind:value={content}
-      placeholder="Start writing..."
+      placeholder={placeholderText}
       on:input={handleInput}
     />
-    {#if $pageData?.page?.riffedFrom}
-      <p style="font-size: 0.9em; color: #555; margin-bottom: 1rem;">
-        Riffing on
-        <a href="http://localhost:8000/{$pageData.page.riffedFrom.handle}/{$pageData.page.riffedFrom.slug}"
-          target="_blank" style="text-decoration: underline;">
-          mosaic.pub/{$pageData.page.riffedFrom.handle}/{$pageData.page.riffedFrom.slug}
+    {#if $pageData.page?.riffedFrom && $pageData.revisions.length == 1}
+      <div class="riff-return-link">
+        <a href={`http://localhost:8000/${$pageData.page.riffedFrom.handle}/${$pageData.page.riffedFrom.slug}`}>
+          Not ready to riff? Go back to reading →
         </a>
-      </p>
+      </div>
     {/if}
   </div>
     <div class="preview-container" class:hidden={!previewVisible}>
@@ -217,5 +235,48 @@
     opacity: 0;
     pointer-events: none;
     transform: translateY(1rem);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-0.5rem); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .riff-info,
+  .riff-echo {
+    animation: fadeIn 0.5s ease-in;
+  }
+
+  .riff-info {
+    font-size: 0.9em;
+    margin-bottom: 1.5rem;
+    background: #f4f4f4;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid #ccc;
+    border-radius: 4px;
+    color: #444;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .view-original-link {
+    font-size: 0.85em;
+    color: #555;
+    text-decoration: underline;
+    white-space: nowrap;
+  }
+
+  .riff-return-link {
+    text-align: right;
+    margin-top: 0.5rem;
+    font-size: 0.85em;
+    color: #666;
+  }
+
+  .riff-return-link a {
+    color: #444;
+    text-decoration: underline;
   }
 </style>

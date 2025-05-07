@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from markdown import markdown
 
-from db import get_page, save_page, verify_or_register_handle
+from db import get_page, save_page, verify_or_register_handle, get_backlinks
 from schema import PublishRequest
 from utils.licenses import license_allows_riffing
 
@@ -58,9 +58,11 @@ async def serve_page(request: Request, handle: str, slug: str):
         raise HTTPException(status_code=404, detail="Page not found")
 
     allow_riff = license_allows_riffing(page["license"])
-    
+    backlinks = get_backlinks(handle, slug)
+
     return templates.TemplateResponse("page.html", {
         "request": request,
         "page": page,
-        "allow_riff": allow_riff
+        "allow_riff": allow_riff,
+        "backlinks": backlinks
     })

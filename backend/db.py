@@ -8,6 +8,8 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives import hashes
 from cryptography.exceptions import InvalidSignature
 
+import json
+
 conn = sqlite3.connect("published.db")
 cursor = conn.cursor()
 
@@ -27,7 +29,9 @@ CREATE TABLE IF NOT EXISTS pages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     byline TEXT,
-    license TEXT
+    license TEXT,
+    riffed_from INTEGER,
+    FOREIGN KEY (riffed_from) REFERENCES pages(id)
 )
 """)
 
@@ -48,8 +52,20 @@ CREATE TABLE IF NOT EXISTS revisions (
 conn.commit()
 
 def save_page(handle: str, slug: str, page: PublishRequest):
+    # Determine riffed_from
+    riffed_from = None
+    try:
+        if page.riffedFrom:
+            cursor.execute("SELECT id FROM pages WHERE handle = ? AND slug = ?", (page.riffedFrom["handle"], page.riffedFrom["slug"]))
+            match = cursor.fetchone()
+            if match:
+                riffed_from = match[0]
+                print(riffed_from)
+    except Exception:
+        pass  # Ignore errors if content is not JSON or riffedFrom is missing
+
     # Check if the page already exists
-    cursor.execute("SELECT id FROM pages WHERE LOWER(slug) = LOWER(?)", (slug,))
+    cursor.execute("SELECT id FROM pages WHERE LOWER(handle) = LOWER(?) AND LOWER(slug) = LOWER(?)", (handle, slug,))
     existing = cursor.fetchone()
 
     if existing:
@@ -57,14 +73,15 @@ def save_page(handle: str, slug: str, page: PublishRequest):
     else:
         cursor.execute("""
         INSERT INTO pages (
-            handle, slug, title, byline, license
-        ) VALUES (?, ?, ?, ?, ?)
+            handle, slug, title, byline, license, riffed_from
+        ) VALUES (?, ?, ?, ?, ?, ?)
         """, (
             handle,
             slug,
             page.title,
             page.byline,
-            page.license
+            page.license,
+            riffed_from
         ))
         page_id = cursor.lastrowid
         conn.commit()
@@ -90,9 +107,11 @@ def get_page(handle: str, slug: str):
     cursor.execute("""
     SELECT
         p.handle, p.slug, p.title, p.created_at, p.updated_at, p.byline, p.license,
-        r.id, r.content, r.created_at
+        r.id, r.content, r.created_at,
+        rp.handle AS riffed_from_handle, rp.slug AS riffed_from_slug
     FROM pages p
     JOIN revisions r ON r.page_id = p.id
+    LEFT JOIN pages rp ON rp.id = p.riffed_from
     WHERE LOWER(p.handle) = LOWER(?)
     AND LOWER(p.slug) = LOWER(?)
     AND r.created_at = (
@@ -115,7 +134,11 @@ def get_page(handle: str, slug: str):
                 "id": row[7],
                 "content": row[8],
                 "created_at": row[9]
-            }
+            },
+            "riffed_from": {
+                "handle": row[10],
+                "slug": row[11]
+            } if row[10] and row[11] else None
         }
     return None
 
@@ -165,3 +188,20 @@ def verify_or_register_handle(handle, public_key, signature):
             (handle.lower(), public_key)
         )
         conn.commit()
+
+def get_backlinks(handle: str, slug: str):
+    cursor.execute("""
+    SELECT source.handle, source.slug, source.title, source.byline, source.created_at
+    FROM pages AS source
+    JOIN pages AS target ON source.riffed_from = target.id
+    WHERE LOWER(target.handle) = LOWER(?) AND LOWER(target.slug) = LOWER(?)
+    ORDER BY source.created_at DESC
+    """, (handle, slug))
+    rows = cursor.fetchall()
+    return [{
+        "handle": row[0],
+        "slug": row[1],
+        "title": row[2],
+        "byline": row[3],
+        "created_at": row[4]
+    } for row in rows]

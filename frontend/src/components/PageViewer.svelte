@@ -29,6 +29,8 @@
     const signature = await signHandle(handle, privateKeyJwk);
     console.log('Generated signature:', signature);
 
+    const riffedFrom = page.riffedFrom || null;
+
     const payload = {
       handle,
       slug: page.slug,
@@ -38,6 +40,7 @@
       updated_at: Date.now(),
       byline,
       license,
+      riffedFrom,
       signature,
       public_key: publicHex
     };
@@ -83,15 +86,28 @@
                 ? $previewRevision.content
                 : $pageData.revision.content
       )}
-      {#if $pageData?.revision?.published}
-      <p class="published-link">
-        Published at:
-        <a href={`http://localhost:8000/${$pageData.page.handle}/${$pageData.page.slug}`}
-           target="_blank" rel="noopener">
-          mosaic.pub/{$pageData.page.handle}/{$pageData.page.slug}
-        </a>
-      </p>
-    {/if}
+      {#if $pageData?.page?.published}
+        <p class="published-link">
+          {#if $pageData?.revision?.published}
+            Published at:
+          {:else}
+            This page was previously published at:
+          {/if}
+          <a href={`http://localhost:8000/${$pageData.page.handle}/${$pageData.page.slug}`}
+              target="_blank" rel="noopener">
+              mosaic.pub/{$pageData.page.handle}/{$pageData.page.slug}
+            </a>
+        </p>
+      {/if}
+      {#if $pageData?.page?.riffedFrom}
+        <p class="riff-notice">
+          This page is a riff on 
+          <a href={`http://localhost:8000/${$pageData.page.riffedFrom.handle}/${$pageData.page.riffedFrom.slug}`}
+             target="_blank" rel="noopener">
+            @{$pageData.page.riffedFrom.handle}/{$pageData.page.riffedFrom.slug}
+          </a>
+        </p>
+      {/if}
     </article>
   {/if}
 </main>
@@ -155,6 +171,22 @@
   }
 
   .published-link a {
+    text-decoration: underline;
+    color: #333;
+    font-weight: 500;
+  }
+
+  .riff-notice {
+    font-size: 0.9em;
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #f4f4f4;
+    border-left: 3px solid #bbb;
+    border-radius: 4px;
+    color: #444;
+  }
+
+  .riff-notice a {
     text-decoration: underline;
     color: #333;
     font-weight: 500;

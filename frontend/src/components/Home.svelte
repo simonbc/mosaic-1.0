@@ -7,23 +7,30 @@
   $: hasPages = Object.values($pages).length > 0
 
   async function handleCreatePage() {
-      const title = prompt('What’s the title of your new page?');
+    let title
+    if (hasPages) {
+      title = prompt('What’s the title of your new page?');
       if (!title) return;
+    } else {
+      title = 'Welcome'
+    }
 
-      const slug = slugify(title);
-      createPageFromTitle(title);
-      await loadPage(slug);
-      editing.set(true);
-      navigateTo(slug);
+    const slug = slugify(title);
+    createPageFromTitle(title);
+    await loadPage(slug);
+    editing.set(true);
+    navigateTo(slug);
   }
 </script>
   
 <main>
-  {#if hasPages}
-    <button on:click={handleCreatePage}>Create a new page</button>
-  {:else}
-    <div>What do you want create?</div>
-  {/if}
+  <button on:click={handleCreatePage}>
+    {#if hasPages}
+      Create a new page
+    {:else}
+      Create your first page
+    {/if}
+  </button>
 </main>
 
 <style>

@@ -27,7 +27,7 @@ export async function maybeHandleRiff(slug) {
       title: `Riff on: ${source.title}`,
       license: source.license,
       byline: '',
-      riffedFrom: { handle, slug: parentSlug },
+      riffedFrom: { ...source },
       cursorPosition: 0,
       published: false,
     }

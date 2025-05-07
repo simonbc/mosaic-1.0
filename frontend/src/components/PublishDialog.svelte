@@ -50,7 +50,6 @@
 {#if $showPublishDialog}
   <div class="overlay" on:click={() => showPublishDialog.set(false)}>
     <div class="publish-dialog" on:click|stopPropagation>
-      {handle}
       <label>
         Handle:
         <input bind:value={handle} />
