@@ -8,7 +8,7 @@
     import NotFound from './components/NotFound.svelte'
 
     import { currentSlug, startRouting, stopRouting, navigateTo } from './routing.js'
-    import { loadPage, createPage } from './data/pages.js'
+    import { loadPage } from './data/pages.js'
     import { pageData, pages, pagesLoaded } from './data/pagesStore.js'
     import { maybeHandleRiff } from './riff.js'
 

@@ -1,14 +1,37 @@
 <script>
   import { onMount, onDestroy } from 'svelte'
   import { marked } from 'marked'
+  import { writable } from 'svelte/store'
 
   import { updatePage, loadPage } from '../data/pages.js'
   import { saveDraft, getDraft, deleteDraft } from '../data/draftsStore.js'
   import { pageData } from '../data/pagesStore.js'
   import { settings } from '../data/settingsStore.js'
-  import { previewRevision } from '../data/uiStore.js'
+  import { previewRevision, editing } from '../data/uiStore.js'
   import { shortcut } from '../actions/shortcut.js'
   import { debounce } from '../utils/timing.js'
+
+  const showShortcuts = writable(false)
+  const isMac = navigator.userAgentData?.platform === 'macOS' || /Mac/.test(navigator.userAgent);
+  const modKey = isMac ? '⌘' : '^'
+
+  function handleKeyDown(e) {
+    if (e.metaKey) showShortcuts.set(true)
+  }
+
+  function handleKeyUp(e) {
+    if (!e.metaKey) showShortcuts.set(false)
+  }
+
+  onMount(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+  })
+
+  onDestroy(() => {
+    window.removeEventListener('keydown', handleKeyDown)
+    window.removeEventListener('keyup', handleKeyUp)
+  })
 
   let title = $pageData.page.title;
   let content = $pageData.revision.content;
@@ -37,10 +60,18 @@
     const scrollPos = lineHeight * (el.value.substr(0, selectionStart).split('\n').length - 1)
     el.scrollTop = scrollPos - paddingTop
   }
+
+  function toggleEditing() {
+        editing.update((e) => !e)
+    }
   
   function togglePreview() {
     settings.update(s => ({ ...s, showPreview: !s.showPreview }))
   }
+
+  function toggleShowRevisions() {
+        settings.update(s => ({ ...s, showRevisions: !s.showRevisions }))
+    }
 
   async function savePage() {
     if (title.trim() !== $pageData.page.title || content.trim() !== $pageData.revision.content) {
@@ -112,10 +143,41 @@
         </span>
         <a href={`http://localhost:8000/${$pageData.page.riffedFrom.handle}/${$pageData.page.riffedFrom.slug}`}
           target="_blank" rel="noopener" class="view-original-link">
-          View original →
+          View original
         </a>
       </p>
     {/if}
+    <div class="toolbar-container">
+      <div class="editor-toolbar">
+        {#if !$settings.showButton}
+          <button on:click={toggleEditing} title="Save (Cmd+S)">
+            Save {#if $showShortcuts}<span class="shortcut-label">({modKey}E)</span>{/if}
+          </button>
+          <button 
+            on:click={togglePreview} 
+            title="Toggle Preview (Cmd+P)"
+            class:active={$settings.showPreview}
+          >
+            Preview {#if $showShortcuts}<span class="shortcut-label">({modKey}P)</span>{/if}
+          </button>
+          <button 
+            on:click={toggleShowRevisions} 
+            title="Toggle Revisions"
+            class:active={$settings.showRevisions}
+          >
+            Version History {#if $showShortcuts}<span class="shortcut-label">({modKey}H)</span>{/if}
+          </button>
+        {/if}
+        <button
+          class="toolbar-toggle-icon"
+          title={$settings.showButton ? 'Show toolbar' : 'Hide toolbar'}
+          on:click={() => settings.update(s => ({ ...s, showButton: !s.showButton }))}
+          class:rotated={$settings.showButton}
+        >
+          ⌃
+        </button>
+      </div>
+    </div>
     <input
       type="text"
       bind:value={title}
@@ -179,7 +241,6 @@
   }
 
   button {
-    margin-top: 1rem;
     align-self: flex-start;
     padding: 0.5rem 1rem;
     font-size: 1rem;
@@ -195,6 +256,7 @@
   }
 
   .split-container {
+    position: relative;
     display: flex;
     width: 100%;
     height: 100vh;
@@ -206,7 +268,6 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    transition: width 0.3s ease;
   }
 
   .editor-container.full {
@@ -219,7 +280,7 @@
     padding: 0 2rem 2rem 2rem;
     overflow-y: auto;
     border-left: 1px solid #ddd;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+
     opacity: 1;
   }
 
@@ -278,5 +339,62 @@
   .riff-return-link a {
     color: #444;
     text-decoration: underline;
+  }
+
+  .editor-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .editor-toolbar button {
+    font-size: 0.8rem;
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0.25rem 0.6rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .editor-toolbar button:hover {
+    background: #f0f0f0;
+  }
+
+  .editor-toolbar button.active {
+    background: #eee;
+    border-color: #999;
+  }
+
+  button.toolbar-toggle-icon {
+    border: 0;
+    padding: 0;
+    opacity: 0.6;
+    align-self: center;
+    background: none;
+  }
+  button.toolbar-toggle-icon:hover {
+    background: none;
+    opacity: 1;
+  }
+  button.toolbar-toggle-icon.rotated {
+    transform: rotate(180deg);
+  }
+  .toolbar-container {
+    position: absolute;
+    top: 1rem;
+    right: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    z-index: 1;
+  }
+
+  .shortcut-label {
+    color: #999;
+    font-size: 0.75em;
+    margin-left: 0.25em;
   }
 </style>

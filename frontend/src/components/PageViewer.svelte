@@ -70,7 +70,7 @@
     <div class="header">
       <h1 class="page-title">{$pageData.page.title}</h1>
       {#if !$previewRevision}
-        <button class="publish-button" on:click={() => toggleShowDialog()}>Publish</button>
+        <button class="publish-button" on:click={() => toggleShowDialog()}>Publish page</button>
       {/if}
     </div>
     <PublishDialog
@@ -125,7 +125,7 @@
   .header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
   }
 
   .page-title {
@@ -143,8 +143,8 @@
   }
 
   .publish-button {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.8rem;
     background: none;
     border: 1px solid #ccc;
     border-radius: 4px;

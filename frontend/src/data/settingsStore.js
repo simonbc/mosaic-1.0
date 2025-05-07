@@ -3,6 +3,7 @@ import { writable } from 'svelte/store'
 const initial = {
   showPreview: false,
   showRevisions: false,
+  showButtons: true,
 }
 
 const stored = localStorage.getItem('settings')
