@@ -1,0 +1,31 @@
+# fly.toml app configuration file generated for backend-winter-fog-5883 on 2025-05-07T16:18:24+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'backend-winter-fog-5883'
+primary_region = 'fra'
+
+[build]
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+[mounts]
+  source = "data"
+  destination = "/data"
+
+[env]
+  FLY_ENV = "production"
+  VITE_API_BASE = "https://backend-winter-fog-5883.fly.dev"
+  FRONTEND_ORIGIN = "https://backend-winter-fog-5883.fly.dev"

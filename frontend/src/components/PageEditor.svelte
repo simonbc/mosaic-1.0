@@ -141,7 +141,7 @@
           <strong>@{$pageData.page.riffedFrom.byline || $pageData.page.riffedFrom.handle}</strong>.
           Your words will live on their own page.
         </span>
-        <a href={`http://localhost:8000/${$pageData.page.riffedFrom.handle}/${$pageData.page.riffedFrom.slug}`}
+        <a href={`/${$pageData.page.riffedFrom.handle}/${$pageData.page.riffedFrom.slug}`}
           target="_blank" rel="noopener" class="view-original-link">
           View original
         </a>
@@ -151,21 +151,21 @@
       <div class="editor-toolbar">
         {#if !$settings.showButton}
           <button on:click={toggleEditing} title="Save (Cmd+S)">
-            Save {#if $showShortcuts}<span class="shortcut-label">({modKey}E)</span>{/if}
+            Save <span class="shortcut-label" class:visible={$showShortcuts}>({modKey}E)</span>
           </button>
           <button 
             on:click={togglePreview} 
             title="Toggle Preview (Cmd+P)"
             class:active={$settings.showPreview}
           >
-            Preview {#if $showShortcuts}<span class="shortcut-label">({modKey}P)</span>{/if}
+            Preview <span class="shortcut-label" class:visible={$showShortcuts}>({modKey}P)</span>
           </button>
           <button 
             on:click={toggleShowRevisions} 
             title="Toggle Revisions"
             class:active={$settings.showRevisions}
           >
-            Version History {#if $showShortcuts}<span class="shortcut-label">({modKey}H)</span>{/if}
+            Version History <span class="shortcut-label" class:visible={$showShortcuts}>({modKey}H)</span>
           </button>
         {/if}
         <button
@@ -189,10 +189,10 @@
       bind:value={content}
       placeholder={placeholderText}
       on:input={handleInput}
-    />
+    ></textarea>
     {#if $pageData.page?.riffedFrom && $pageData.revisions.length == 1}
       <div class="riff-return-link">
-        <a href={`http://localhost:8000/${$pageData.page.riffedFrom.handle}/${$pageData.page.riffedFrom.slug}`}>
+        <a href={`/${$pageData.page.riffedFrom.handle}/${$pageData.page.riffedFrom.slug}`}>
           Not ready to riff? Go back to reading →
         </a>
       </div>
@@ -303,8 +303,7 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .riff-info,
-  .riff-echo {
+  .riff-info {
     animation: fadeIn 0.5s ease-in;
   }
 
@@ -393,8 +392,14 @@
   }
 
   .shortcut-label {
+    display: inline-block;
+    width: 3.5em;
     color: #999;
     font-size: 0.75em;
     margin-left: 0.25em;
+    visibility: hidden;
+  }
+  .shortcut-label.visible {
+    visibility: visible;
   }
 </style>

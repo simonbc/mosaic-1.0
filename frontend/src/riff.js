@@ -1,6 +1,7 @@
 import { createPage } from './data/pages.js'
 import { navigateTo } from './routing.js'
 import { editing } from './data/uiStore.js'
+import { apiFetch } from './utils/fetch.js'
 
 let handled = false
 
@@ -14,12 +15,8 @@ export async function maybeHandleRiff(slug) {
   handled = true
 
   try {
-    const res = await fetch(
-      `http://localhost:8000/api/page/${handle}/${parentSlug}`
-    )
-    if (!res.ok) throw new Error('Page not found')
+    const source = await apiFetch(`/api/page/${handle}/${parentSlug}`)
 
-    const source = await res.json()
     const newSlug = `r-${Date.now()}`
 
     const page = {

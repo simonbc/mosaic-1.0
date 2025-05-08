@@ -2,8 +2,10 @@ from fastapi import FastAPI, HTTPException, Request, Path
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from datetime import datetime
 from markdown import markdown
+import os
 
 from db import get_page, save_page, verify_or_register_handle, get_backlinks
 from schema import PublishRequest
@@ -15,11 +17,13 @@ templates = Jinja2Templates(directory="templates")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["*"],  # or ["https://your-app.fly.dev"]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/assets", StaticFiles(directory="../frontend/dist/assets"), name="assets")
 
 def datetimeformat(value):
     if isinstance(value, datetime):
@@ -66,3 +70,11 @@ async def serve_page(request: Request, handle: str, slug: str):
         "allow_riff": allow_riff,
         "backlinks": backlinks
     })
+
+@app.get("/{full_path:path}", response_class=HTMLResponse)
+async def serve_spa(full_path: str):
+    index_path = os.path.join("../frontend/dist", "index.html")
+    if os.path.exists(index_path):
+        with open(index_path) as f:
+            return HTMLResponse(content=f.read())
+    raise HTTPException(status_code=404, detail="Page not found")

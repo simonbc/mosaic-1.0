@@ -83,10 +83,7 @@
           <h1 style="margin: 0">{{ page.title }}</h1>
 
           {% if allow_riff %}
-          <a
-            href="http://localhost:5173/r/{{ page.handle }}/{{ page.slug }}"
-            class="riff-button"
-          >
+          <a href="/r/{{ page.handle }}/{{ page.slug }}" class="riff-button">
             Riff this page
           </a>
           {% endif %}

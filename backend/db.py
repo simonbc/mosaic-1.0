@@ -1,6 +1,7 @@
-from fastapi import HTTPException
+import os
 import sqlite3
 from schema import PublishRequest
+from fastapi import HTTPException
 
 from utils.crypto import verify_signature
 
@@ -9,6 +10,14 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.exceptions import InvalidSignature
 
 import json
+
+DB_PATH = (
+    "/data/published.db"
+    if os.getenv("FLY_ENV") == "production"
+    else os.path.join(os.path.dirname(__file__), "published.db")
+)
+
+conn = sqlite3.connect(DB_PATH)
 
 conn = sqlite3.connect("published.db")
 cursor = conn.cursor()
@@ -177,6 +186,7 @@ def verify_or_register_handle(handle, public_key, signature):
 
     if existing:
         stored_public_key = existing[0]
+        print("Stored public key:", stored_public_key)
         if not verify_signature(message, signature, stored_public_key):
             raise HTTPException(status_code=403, detail="Invalid signature")
     else:

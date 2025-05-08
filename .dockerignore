@@ -1,0 +1,33 @@
+# Node-related
+frontend/node_modules
+frontend/.svelte-kit
+frontend/dist/assets/*.map
+frontend/.vite
+frontend/.DS_Store
+
+# Python-related
+backend/__pycache__/
+backend/*.pyc
+backend/.pytest_cache
+backend/venv/
+
+# Database
+backend/published.db
+
+# OS + Editor junk
+.DS_Store
+*.swp
+*.swo
+*.log
+
+# Git
+.git
+.gitignore
+
+# Cache
+*.cache
+__pycache__/
+*.sqlite3
+
+# Optional: ignore local .env files
+.env

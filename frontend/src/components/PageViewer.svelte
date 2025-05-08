@@ -10,6 +10,7 @@
   signHandle,
   exportPublicKeyHex
 } from '../utils/crypto.js'
+  import { apiFetch } from '../utils/fetch.js'
 
   let handle = '';
   let byline = '';
@@ -23,11 +24,12 @@
 
     const { privateKeyJwk, publicKeyJwk } = await getOrCreateKeyPair();
 
+    console.log("🔐 Signing handle:", handle);
+console.log("🔐 Public key (hex):", await exportPublicKeyHex(publicKeyJwk));
     const publicHex = await exportPublicKeyHex(publicKeyJwk);
-    console.log('Using public key:', publicHex);
-
     const signature = await signHandle(handle, privateKeyJwk);
-    console.log('Generated signature:', signature);
+    
+console.log("🔐 Signature (base64):", signature);
 
     const riffedFrom = page.riffedFrom || null;
 
@@ -45,19 +47,19 @@
       public_key: publicHex
     };
 
-    const res = await fetch(`http://localhost:8000/api/page/${handle}/${page.slug}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    try {
+      await apiFetch(`/api/page/${handle}/${page.slug}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-    if (!res.ok) {
+      publishPage(page.id, revision.id, handle, byline, license);
+      await loadPage($pageData.page.slug);
+    } catch (err) {
       alert('Failed to publish page');
-      return;
+      console.error(err);
     }
-
-    publishPage(page.id, revision.id, handle, byline, license);
-    await loadPage($pageData.page.slug);
   }
 
   function toggleShowDialog() {
@@ -70,7 +72,7 @@
     <div class="header">
       <h1 class="page-title">{$pageData.page.title}</h1>
       {#if !$previewRevision}
-        <button class="publish-button" on:click={() => toggleShowDialog()}>Publish page</button>
+        <button class="publish-button" on:click={() => toggleShowDialog()}>Publish page!</button>
       {/if}
     </div>
     <PublishDialog
@@ -93,7 +95,7 @@
           {:else}
             This page was previously published at:
           {/if}
-          <a href={`http://localhost:8000/${$pageData.page.handle}/${$pageData.page.slug}`}
+          <a href={`/${$pageData.page.handle}/${$pageData.page.slug}`}
               target="_blank" rel="noopener">
               mosaic.pub/{$pageData.page.handle}/{$pageData.page.slug}
             </a>
@@ -102,7 +104,7 @@
       {#if $pageData?.page?.riffedFrom}
         <p class="riff-notice">
           This page is a riff on 
-          <a href={`http://localhost:8000/${$pageData.page.riffedFrom.handle}/${$pageData.page.riffedFrom.slug}`}
+          <a href={`/${$pageData.page.riffedFrom.handle}/${$pageData.page.riffedFrom.slug}`}
              target="_blank" rel="noopener">
             @{$pageData.page.riffedFrom.handle}/{$pageData.page.riffedFrom.slug}
           </a>

@@ -79,12 +79,7 @@
       box-sizing: border-box;
       z-index: 10;                /* keeps it above content */
     }
-    
-    .sidebar h2 {
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-    }
-    
+
     .sidebar ul {
       list-style: none;
       padding: 0;
