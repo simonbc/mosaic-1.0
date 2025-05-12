@@ -41,7 +41,7 @@
     }
   </script>
   
-  {#if !$editing}
+  {#if !$editing && allPages.length > 1}
     <aside class="sidebar" transition:fly="{{ x: -250, duration: 300 }}">
       <ul>
         {#each allPages as page}
@@ -60,7 +60,7 @@
       </ul>
     
       <div class="actions">
-          <button on:click={handleCreatePage}>+ New Page</button>
+          <button on:click={handleCreatePage}>+ Add page</button>
       </div>
     </aside>
   {/if}

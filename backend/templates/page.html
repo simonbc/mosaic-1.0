@@ -21,73 +21,17 @@
         flex: 1;
       }
 
-      .riff-sidebar {
-        width: 25ch;
-        font-size: 0.85em;
-        border-left: 1px solid #eee;
-        padding: 0 2rem 1rem 2rem;
-        border-radius: 4px;
-        align-self: flex-start;
-        margin-left: 1rem;
-      }
-
-      .riff-sidebar p {
-        margin-top: 0;
-        margin-bottom: 0;
-      }
-
-      .riff-sidebar ul {
-        padding-left: 0;
-        margin: 0.5rem 0 0;
-        list-style: none;
-      }
-
-      .riff-sidebar li {
-        margin: 0;
-      }
-
-      .riff-sidebar a {
-        text-decoration: underline;
-        color: #333;
-        font-weight: 500;
-      }
       hr {
         border: none;
         border-top: 1px solid #eee;
         margin: 2rem 0;
-      }
-      .riff-button {
-        font-size: 0.8em;
-        text-decoration: none;
-        color: inherit;
-        border: 1px solid #ccc;
-        padding: 0.3em 0.6em;
-        border-radius: 4px;
-        transition: background 0.2s ease;
-      }
-      .riff-button:hover {
-        background: #f4f4f4;
       }
     </style>
   </head>
   <body>
     <div class="page-container">
       <div class="main-content">
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          "
-        >
-          <h1 style="margin: 0">{{ page.title }}</h1>
-
-          {% if allow_riff %}
-          <a href="/r/{{ page.handle }}/{{ page.slug }}" class="riff-button">
-            Riff this page
-          </a>
-          {% endif %}
-        </div>
+        <h1 style="margin: 0">{{ page.title }}</h1>
 
         {% if page.byline or page.created_at %}
         <p>
@@ -110,40 +54,6 @@
         </footer>
         {% endif %}
       </div>
-
-      {% if page.riffed_from or (backlinks and backlinks|length > 0) %}
-      <aside class="riff-sidebar">
-        <div>
-          {% if page.riffed_from %}
-          <div class="riffed-from">
-            <p>
-              This page is a riff on
-              <a
-                href="/{{ page.riffed_from.handle }}/{{ page.riffed_from.slug }}"
-              >
-                {{ page.riffed_from.handle }}/{{ page.riffed_from.slug }}
-              </a>
-            </p>
-          </div>
-          {% endif %}
-        </div>
-
-        <div>
-          {% if backlinks and backlinks|length > 0 %}
-          <p>This page was riffed:</p>
-          <ul>
-            {% for riff in backlinks %}
-            <li>
-              <a href="/{{ riff.handle }}/{{ riff.slug }}">
-                {{ riff.handle }}/{{ riff.slug }}
-              </a>
-            </li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-        </div>
-      </aside>
-      {% endif %}
     </div>
   </body>
 </html>

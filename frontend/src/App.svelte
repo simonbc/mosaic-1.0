@@ -10,7 +10,6 @@
     import { currentSlug, startRouting, stopRouting, navigateTo } from './routing.js'
     import { loadPage } from './data/pages.js'
     import { pageData, pages, pagesLoaded } from './data/pagesStore.js'
-    import { maybeHandleRiff } from './riff.js'
 
     let slug
     let pageDataLoaded = false
@@ -18,16 +17,12 @@
     $: $currentSlug
     $: slug = $currentSlug
     $: hasPages = Object.values($pages).length > 0
-    $: maybeHandleRiff(slug)
-    $: {
-        if (slug && !slug.startsWith('r/')) {
-            loadPage(slug).then(() => {
-                if (slug) {
-                    pageDataLoaded = true
-                }
-            })
+
+    $: loadPage(slug).then(() => {
+        if (slug) {
+            pageDataLoaded = true
         }
-    }
+    })
 
     onMount(() => {
         startRouting()

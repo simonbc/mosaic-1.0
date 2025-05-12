@@ -12,4 +12,3 @@ class PublishRequest(BaseModel):
     signature: str
     byline: Optional[str] = None
     license: Optional[str] = None
-    riffedFrom: Optional[dict] = None

@@ -24,14 +24,8 @@
 
     const { privateKeyJwk, publicKeyJwk } = await getOrCreateKeyPair();
 
-    console.log("🔐 Signing handle:", handle);
-console.log("🔐 Public key (hex):", await exportPublicKeyHex(publicKeyJwk));
     const publicHex = await exportPublicKeyHex(publicKeyJwk);
     const signature = await signHandle(handle, privateKeyJwk);
-    
-console.log("🔐 Signature (base64):", signature);
-
-    const riffedFrom = page.riffedFrom || null;
 
     const payload = {
       handle,
@@ -42,7 +36,6 @@ console.log("🔐 Signature (base64):", signature);
       updated_at: Date.now(),
       byline,
       license,
-      riffedFrom,
       signature,
       public_key: publicHex
     };
@@ -71,9 +64,11 @@ console.log("🔐 Signature (base64):", signature);
   {#if $pageData}
     <div class="header">
       <h1 class="page-title">{$pageData.page.title}</h1>
-      {#if !$previewRevision}
-        <button class="publish-button" on:click={() => toggleShowDialog()}>Publish page!</button>
-      {/if}
+      <div>
+        {#if !$previewRevision}
+          <button class="publish-button" on:click={() => toggleShowDialog()}>Publish page</button>
+        {/if}
+      </div>
     </div>
     <PublishDialog
       bind:handle
@@ -101,15 +96,7 @@ console.log("🔐 Signature (base64):", signature);
             </a>
         </p>
       {/if}
-      {#if $pageData?.page?.riffedFrom}
-        <p class="riff-notice">
-          This page is a riff on 
-          <a href={`/${$pageData.page.riffedFrom.handle}/${$pageData.page.riffedFrom.slug}`}
-             target="_blank" rel="noopener">
-            @{$pageData.page.riffedFrom.handle}/{$pageData.page.riffedFrom.slug}
-          </a>
-        </p>
-      {/if}
+
     </article>
   {/if}
 </main>
@@ -173,22 +160,6 @@ console.log("🔐 Signature (base64):", signature);
   }
 
   .published-link a {
-    text-decoration: underline;
-    color: #333;
-    font-weight: 500;
-  }
-
-  .riff-notice {
-    font-size: 0.9em;
-    margin-bottom: 1rem;
-    padding: 0.5rem 1rem;
-    background-color: #f4f4f4;
-    border-left: 3px solid #bbb;
-    border-radius: 4px;
-    color: #444;
-  }
-
-  .riff-notice a {
     text-decoration: underline;
     color: #333;
     font-weight: 500;
