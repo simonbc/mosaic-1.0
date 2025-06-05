@@ -4,3 +4,4 @@ pydantic
 jinja2
 markdown
 cryptography
+python-dotenv

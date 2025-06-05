@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from typing import Optional
 
 class PublishRequest(BaseModel):
-    title: str
     handle: str
     slug: str
     content: str
@@ -11,4 +10,4 @@ class PublishRequest(BaseModel):
     public_key: str
     signature: str
     byline: Optional[str] = None
-    license: Optional[str] = None
+    parent_id: Optional[int] = None

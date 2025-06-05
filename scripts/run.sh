@@ -13,6 +13,10 @@ fi
 echo "🟢 Launching frontend (Vite)..."
 (cd frontend && npm run dev &)
 
+# Set environment variable for dev mode
+export IS_DEV=1
+
 # Start backend (FastAPI + Uvicorn)
 echo "🚀 Launching backend..."
-(cd backend && source venv/bin/activate && uvicorn main:app --reload)
+echo IS_DEV
+(cd backend && source venv/bin/activate && uvicorn main:app --host mosaic.localhost --port 8000 --reload)

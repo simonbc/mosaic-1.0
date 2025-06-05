@@ -1,28 +1,19 @@
 <script>
     import { onMount, onDestroy } from 'svelte'
 
-    import Header from './components/Header.svelte'
-    import Sidebar from './components/Sidebar.svelte'
+    import Header from './components/layout/Header.svelte'
+    import Footer from './components/layout/Footer.svelte'
     import Home from './components/Home.svelte'
-    import Page from './components/Page.svelte'
-    import NotFound from './components/NotFound.svelte'
+    import Post from './components/post/Post.svelte'
+    import Sidebar from './components/layout/Sidebar.svelte'
 
-    import { currentSlug, startRouting, stopRouting, navigateTo } from './routing.js'
-    import { loadPage } from './data/pages.js'
-    import { pageData, pages, pagesLoaded } from './data/pagesStore.js'
+    import { currentSlug, startRouting, stopRouting} from './routing.js'
+    import { loadPost  } from '@data/posts.js'
+    import { editing } from '@data/uiStore'
 
-    let slug
-    let pageDataLoaded = false
-
-    $: $currentSlug
-    $: slug = $currentSlug
-    $: hasPages = Object.values($pages).length > 0
-
-    $: loadPage(slug).then(() => {
-        if (slug) {
-            pageDataLoaded = true
-        }
-    })
+    $: if ($currentSlug) {
+        loadPost($currentSlug)
+    }
 
     onMount(() => {
         startRouting()
@@ -31,27 +22,19 @@
     onDestroy(() => {
         stopRouting()
     })
-
 </script>
 
-<main >
-    <Header />
-
-    {#if hasPages}
-        <Sidebar />
-    {/if}
-
-    {#if pagesLoaded}
-        {#if slug }
-            {#if pageDataLoaded}
-                {#if $pageData}
-                    <Page />
-                {:else}
-                    <NotFound {slug} />
-                {/if}
+<div class="app-main" role="main">
+     <Header />
+     <div class="app-container" class:editing={$editing}>
+        <div class="app-content">   
+            {#if $currentSlug}
+                <Post />
+            {:else}
+                <Home />
             {/if}
-        {:else}
-            <Home />
-        {/if}
-    {/if}
-</main>
+        </div>
+        <Sidebar />
+    </div>
+    <Footer />
+</div>

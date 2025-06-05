@@ -1,142 +1,91 @@
 <script>
-  import { createPageFromTitle, loadPage } from '../data/pages.js';
-  import { pages } from '../data/pagesStore.js'
-  import { slugify, navigateTo } from '../routing.js';
-  import { editing } from '../data/uiStore.js';
+    import { onMount} from 'svelte'
+    import { posts, createPost } from '@data/posts.js';
+    import { navigateTo } from '../routing.js';
+    import { editing } from '@data/uiStore.js';
 
-  $: hasPages = Object.values($pages).length > 0
+    let textareaEl
+    let content
+    let hasPosts
 
-  async function handleCreatePage() {
-    let title
-    if (hasPages) {
-      title = prompt('What’s the title of your new page?');
-      if (!title) return;
-    } else {
-      title = 'Welcome'
+    $: hasPosts = $posts !== undefined && Object.values($posts).length > 0
+
+     function handleInput(event) {
+      content = event.target.value
+    }
+    
+    function handleCreatePost() {
+        const slug = createPost({ content })
+        navigateTo(slug)
     }
 
-    const slug = slugify(title);
-    createPageFromTitle(title);
-    await loadPage(slug);
-    editing.set(true);
-    navigateTo(slug);
-  }
+    onMount(() => {
+        if (textareaEl) {
+            textareaEl.focus()
+        }
+    })
 </script>
-  
-<main>
-  <nav class="top-menu">
-    <a href="/about">about</a>
-    <a href="mailto:hello@mosaic.pub">talk to us</a>
-  </nav>
-  <div class="logo">Mosaic</div>
-  <div class="home-content">
-    
-    
-    
-    <button on:click={handleCreatePage}>
-      {#if hasPages}
-        Create a new page
-      {:else}
-        Publish your first page
-      {/if}
-    </button>
-    
-  </div>
-</main>
 
+<section class="home">
+    <div class="container">
+        <textarea
+            bind:this={textareaEl}
+            bind:value={content}
+            on:input={handleInput}
+            placeholder="Start writing..."
+            class="content-input"
+            autofocus
+        ></textarea>
+        <button class="btn btn-primary" on:click={handleCreatePost}>
+            Create a post
+        </button>
+    </div>
+</section>
+    
 <style>
-main {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  text-align: center;
-  background: #fafafa;
-  color: #333;
-  padding: 2rem;
-}
+    .home {
+        margin-top: 70px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem 1rem;
+    }
 
-.logo {
-  position: absolute;
-  top: 1.5rem;
-  left: 1.5rem;
-  font-size: 1rem;
-  font-weight: bold;
-  color: #666;
-  font-family: sans-serif;
-}
+    @media (min-width: 768px) {
+        .home {
+            min-height: calc(100vh - 140px);
+        }
+    }
 
-.top-menu {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  display: flex;
-  gap: 1.2rem;
-  font-family: sans-serif;
-}
+    .container {
+        text-align: center;
+    }
 
-.top-menu a {
-  font-size: 0.9rem;
-  color: #666;
-  text-decoration: none;
-}
+    .content-input {
+        width: 100%;
+        max-width: 700px;
+        height: 130px;
+        resize: none;
+        margin-bottom: 1rem;
+        padding: 1.5rem;
+        border-color: #ddd;
+        border-radius: 25px;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+        font-family: var(--font-mono);
+        font-size: 1rem;
+    }
 
-.top-menu a:hover {
-  text-decoration: underline;
-}
+    .content-input:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px var(--color-accent);
+    }
 
-.home-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-h1 {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.tagline {
-  font-size: 1.8rem;
-  font-weight: 500;
-  color: #444;
-  margin-bottom: 1.2rem;
-  max-width: 40ch;
-  line-height: 1.6;
-}
-
-.subtagline {
-  font-size: 1.1rem;
-  color: #555;
-  margin-bottom: 1.8rem;
-  max-width: 42ch;
-  line-height: 1.6;
-}
-
-button {
-  font-size: 1rem;
-  padding: 0.55rem 1.4rem;
-  background: #111;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-button:hover {
-  background: #333;
-  transform: scale(1.03);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.note {
-  margin-top: 2rem;
-  font-size: 1rem;
-  color: #888;
-  line-height: 1.6;
-}
-</style>  
+    @media (min-width: 768px) {
+        .content-input {
+            font-size: 1.1rem;
+        }
+    }
+</style>

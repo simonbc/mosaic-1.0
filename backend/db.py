@@ -30,26 +30,25 @@ CREATE TABLE IF NOT EXISTS handles (
 """)
 
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS pages (
+CREATE TABLE IF NOT EXISTS posts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     handle TEXT,
     slug TEXT,
-    title TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     byline TEXT,
-    license TEXT
+    parent_id INTEGER
 )
 """)
 
 cursor.execute("""
-CREATE UNIQUE INDEX IF NOT EXISTS idx_handle_slug ON pages(handle, slug)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_handle_slug ON posts(handle, slug)
 """)
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS revisions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    page_id INTEGER,
+    post_id INTEGER,
     content TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -58,70 +57,69 @@ CREATE TABLE IF NOT EXISTS revisions (
 
 conn.commit()
 
-def save_page(handle: str, slug: str, page: PublishRequest):
-    # Check if the page already exists
-    cursor.execute("SELECT id FROM pages WHERE LOWER(handle) = LOWER(?) AND LOWER(slug) = LOWER(?)", (handle, slug,))
+def save_post(handle: str, slug: str, post: PublishRequest):
+    # Check if the post already exists
+    cursor.execute("SELECT id FROM posts WHERE LOWER(handle) = LOWER(?) AND LOWER(slug) = LOWER(?)", (handle, slug,))
     existing = cursor.fetchone()
 
     if existing:
-        page_id = existing[0]
+        post_id = existing[0]
     else:
         cursor.execute("""
-        INSERT INTO pages (
-            handle, slug, title, byline, license
-        ) VALUES (?, ?, ?, ?, ?)
+        INSERT INTO posts (
+            handle, slug, byline, parent_id
+        ) VALUES (?, ?, ?, ?)
         """, (
             handle,
             slug,
-            page.title,
-            page.byline,
-            page.license
+            post.byline,
+            post.parent_id
         ))
-        page_id = cursor.lastrowid
+        post_id = cursor.lastrowid
         conn.commit()
 
     # Check if the content has changed
     cursor.execute("""
-    SELECT content FROM revisions
-    WHERE page_id = ?
-    ORDER BY created_at DESC
-    LIMIT 1
-    """, (page_id,))
+        SELECT content FROM revisions
+        WHERE post_id = ?
+        ORDER BY created_at DESC
+        LIMIT 1
+    """, (post_id,))
     last_revision = cursor.fetchone()
-    if last_revision and last_revision[0] == page.content:
-        return  # Skip saving a duplicate revision
+    if last_revision and last_revision[0] == post.content:
+        return post_id  # Skip saving a duplicate revision
 
     revision = {
-        "page_id": page_id,
-        "content": page.content
+        "post_id": post_id,
+        "content": post.content
     }
     save_revision(revision)
+    return post_id
 
-def get_page(handle: str, slug: str):
+def get_post(id: int):
     cursor.execute("""
     SELECT
-        p.handle, p.slug, p.title, p.created_at, p.updated_at, p.byline, p.license,
+        p.id, p.handle, p.slug, p.created_at, p.updated_at, p.byline, p.parent_id,
         r.id, r.content, r.created_at
-    FROM pages p
-    JOIN revisions r ON r.page_id = p.id
-    WHERE LOWER(p.handle) = LOWER(?)
-    AND LOWER(p.slug) = LOWER(?)
+    FROM posts p
+    JOIN revisions r ON r.post_id = p.id
+    WHERE p.id = ?
     AND r.created_at = (
         SELECT MAX(created_at)
         FROM revisions
-        WHERE page_id = p.id
+        WHERE post_id = p.id
     )
-    """, (handle, slug,))
+    """, (id,))
     row = cursor.fetchone()
     if row:
         return {
-            "handle": row[0],
-            "slug": row[1],
-            "title": row[2],
+            "id": row[0],
+            "handle": row[1],
+            "slug": row[2],
             "created_at": row[3],
             "updated_at": row[4],
             "byline": row[5],
-            "license": row[6],
+            "parent_id": row[6],
             "revision": {
                 "id": row[7],
                 "content": row[8],
@@ -132,23 +130,89 @@ def get_page(handle: str, slug: str):
 
 def save_revision(revision):
     cursor.execute("""
-    INSERT INTO revisions (
-        page_id, content
-    ) VALUES (?, ?)
+        INSERT INTO revisions (
+            post_id, content
+        ) VALUES (?, ?)
     """, (
-        revision["page_id"],
+        revision["post_id"],
         revision["content"]
     ))
     conn.commit()
 
-
-def get_revisions_by_page_id(page_id: str):
+def get_post_by_slug(handle: str, slug: str):
     cursor.execute("""
-    SELECT id, content, created_at
-    FROM revisions
-    WHERE page_id = ?
-    ORDER BY created_at DESC
-    """, (page_id,))
+        SELECT
+            p.id, p.handle, p.slug, p.created_at, p.updated_at, p.byline, p.parent_id,
+            r.id, r.content, r.created_at,
+            parent.handle, parent.slug
+        FROM posts p
+        JOIN revisions r ON r.id = (
+            SELECT id FROM revisions
+            WHERE post_id = p.id
+            ORDER BY id DESC
+            LIMIT 1
+        )
+        LEFT JOIN posts parent ON parent.id = p.parent_id
+        WHERE LOWER(p.handle) = LOWER(?)
+        AND LOWER(p.slug) = LOWER(?)
+    """, (handle, slug,))
+    row = cursor.fetchone()
+    if row:
+        post = {
+            "id": row[0],
+            "handle": row[1],
+            "slug": row[2],
+            "created_at": row[3],
+            "updated_at": row[4],
+            "byline": row[5],
+            "parent_id": row[6],
+            "revision": {
+                "id": row[7],
+                "content": row[8],
+                "created_at": row[9]
+            },
+            "parent": {
+                "handle": row[10],
+                "slug": row[11]
+            }
+        }
+
+        # Fetch responses
+        cursor.execute("""
+            SELECT
+                p.id, p.handle, p.slug, p.byline,
+                r.content, r.created_at
+            FROM posts p
+            JOIN revisions r ON r.id = (
+                SELECT id FROM revisions
+                WHERE post_id = p.id
+                ORDER BY id DESC
+                LIMIT 1
+            )
+            WHERE p.parent_id = ?
+            ORDER BY r.created_at DESC
+        """, (post["id"],))
+        children = cursor.fetchall()
+        post["responses"] = [
+            {
+                "id": c[0],
+                "handle": c[1],
+                "slug": c[2],
+                "byline": c[3],
+                "content": c[4],
+                "created_at": c[5]
+            } for c in children
+        ]
+        return post
+    return None
+
+def get_revisions_by_post_id(post_id: str):
+    cursor.execute("""
+        SELECT id, content, created_at
+        FROM revisions
+        WHERE post_id = ?
+        ORDER BY created_at DESC
+    """, (post_id,))
     rows = cursor.fetchall()
     return [{
         "id": row[0],

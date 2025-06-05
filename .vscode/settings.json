@@ -1,0 +1,10 @@
+{
+  "javascript.preferences.importModuleSpecifier": "non-relative",
+  "path-intellisense.mappings": {
+    "@components": "${workspaceRoot}/src/components",
+    "@data": "${workspaceRoot}/src/data",
+    "@actions": "${workspaceRoot}/src/actions",
+    "@utils": "${workspaceRoot}/src/utils",
+    "@styles": "${workspaceRoot}/src/styles"
+  }
+}

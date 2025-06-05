@@ -1,24 +1,39 @@
 import { writable } from 'svelte/store'
 
-// Reactive slug store
+import { editing, responding } from '@data/uiStore'
+
 export const currentSlug = writable('')
 
-// Update slug based on URL
 export function updateRoute() {
-  const path = window.location.pathname.slice(1) // remove leading slash
+  let path = window.location.pathname.slice(1) // remove leading slash
+  const segments = path.split('/')
+
+  if (segments.length === 2 && segments[1] === 'edit') {
+    path = segments[0]
+    editing.set(true)
+  } else if (segments.length === 3 && segments[2] === 'respond') {
+    path = segments[1]
+    responding.set(true)
+  }
+
   currentSlug.set(decodeURIComponent(path || ''))
 }
 
-// Navigate to a different slug
-export function navigateTo(slug) {
-  history.pushState({}, '', `/${encodeURIComponent(slug)}`)
+export function navigateTo(slug, handle = null) {
+  let path = encodeURIComponent(slug)
+  if (handle) {
+    path = `@${encodeURIComponent(handle)}/${path}`
+  }
+  console.log('navigateTo', path)
+  history.pushState({}, '', `/${path}`)
   updateRoute()
 }
 
-// Setup listener (optional helper if you want central control)
 export function startRouting() {
-  updateRoute()
-  window.addEventListener('popstate', updateRoute)
+  if (typeof window !== 'undefined') {
+    updateRoute()
+    window.addEventListener('popstate', updateRoute)
+  }
 }
 
 export function stopRouting() {

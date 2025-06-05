@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "moduleResolution": "bundler",
-    "target": "ESNext",
-    "module": "ESNext",
+    "module": "esnext",
+    "target": "esnext",
     /**
      * svelte-preprocess cannot figure out whether you have
      * a value or a type, so tell TypeScript to enforce using
@@ -22,7 +22,15 @@
      * Typecheck JS in `.svelte` and `.js` files by default.
      * Disable this if you'd like to use dynamic types.
      */
-    "checkJs": true
+    "checkJs": true,
+    "baseUrl": "./",
+    "paths": {
+      "@components/*": ["src/components/*"],
+      "@data/*": ["src/data/*"],
+      "@actions/*": ["src/actions/*"],
+      "@utils/*": ["src/utils/*"],
+      "@styles/*": ["src/styles/*"]
+    }
   },
   /**
    * Use global.d.ts instead of compilerOptions.types

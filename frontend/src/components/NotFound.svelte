@@ -1,23 +1,20 @@
 <script>
-    import { createPageFromTitle } from '../data/pages.js';
-    import { loadPage } from '../data/pages.js';
-    import { editing } from '../data/uiStore.js';
-    import { deslugify } from '../routing.js';
+    import { createPost } from '@data/posts.js';
+    import { loadPost } from '@data/posts.js';
+    import { editing } from '@data/uiStore.js';
+    import { deslugify, currentSlug } from '../routing.js';
   
-    export let slug;
-  
-    async function createNewPage() {
-      const title = deslugify(slug);
-      const pageId = createPageFromTitle(title);
-      await loadPage(slug);
+    async function createNewPost() {
+      await createPost();
+      await loadPost($currentSlug);
       editing.set(true);
     }
   </script>
   
   <main class="not-found">
-    <h1>Page not found</h1>
-    <p>The page <code>{slug}</code> does not exist.</p>
-    <button on:click={createNewPage}>Create this page</button>
+    <h1>Post not found</h1>
+    <p>This post does not exist.</p>
+    <button on:click={createNewPost}>Create this post</button>
   </main>
   
   <style>
