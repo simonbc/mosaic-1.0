@@ -3,7 +3,7 @@
 </script>
 
 <div class="publish-status">
-    {#if $currentPost.post.published}
+    {#if $currentPost?.post.published}
         <span>Published</span>
     {/if}
 </div>

@@ -24,7 +24,6 @@ export function navigateTo(slug, handle = null) {
   if (handle) {
     path = `@${encodeURIComponent(handle)}/${path}`
   }
-  console.log('navigateTo', path)
   history.pushState({}, '', `/${path}`)
   updateRoute()
 }

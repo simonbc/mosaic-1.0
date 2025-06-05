@@ -3,7 +3,7 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'backend-winter-fog-5883'
+app = 'mosaic-demo'
 primary_region = 'fra'
 
 [build]
@@ -27,5 +27,5 @@ primary_region = 'fra'
 
 [env]
   FLY_ENV = "production"
-  VITE_API_BASE = "https://backend-winter-fog-5883.fly.dev"
-  FRONTEND_ORIGIN = "https://backend-winter-fog-5883.fly.dev"
+  VITE_API_BASE = "https://mosaic-demo.fly.dev"
+  FRONTEND_ORIGIN = "https://mosaic-demo.fly.dev"

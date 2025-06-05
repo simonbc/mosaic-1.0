@@ -17,7 +17,6 @@
         }
         toggleShowRevisions()
     }
-    console.log($currentPost)
 </script>
 
 {#if $currentPost!== undefined && $settings.showRevisions}

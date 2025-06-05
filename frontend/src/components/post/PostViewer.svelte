@@ -8,7 +8,6 @@
 
     import { previewRevision, headerNav } from '@data/uiStore.js';
     import { currentPost } from '@data/posts.js';
-    import { API_BASE } from '../../env.js'
 
     onMount(async () => {
         headerNav.set([
@@ -17,7 +16,6 @@
             { id: 'publish', component: PublishButton },
         ]);
     })
-    console.log($currentPost)
 </script>
 
 <section class="post-section">

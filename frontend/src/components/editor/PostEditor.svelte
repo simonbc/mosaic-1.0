@@ -131,17 +131,18 @@
 >
     {#if $previewRevision}
         <div class="revision-banner">
-        Viewing revision from 
+        <div>Viewing revision from 
 
         {new Date($previewRevision.createdAt).toLocaleDateString(undefined, {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
-        })}
-        &middot;
+        })}</div>
+        <div>
         <button class="btn-link" on:click={() => previewRevision.set(null)}>Cancel</button>
         &middot;
         <button class="btn-link" on:click={() => confirmRestore()}>Restore this revision</button>
+        </div>
         </div>
     {/if}
     
@@ -278,16 +279,26 @@
 
     .revision-banner {
         position: fixed;
-        top: 6.5rem;
+        bottom: 0;
         left: 50%;
         transform: translateX(-50%);
+        width: 100%;
         background-color: var(--color-bg);
         z-index: 11;
         border: 1px solid #ddd;
         padding: 0.75rem 1.5rem;
         text-align: center;
         font-size: 0.95rem;
-        border-radius: 25px;
+    }
+
+    @media(min-width: 768px) {
+        .revision-banner {
+            top: 6.5rem;
+            bottom: unset;
+            display: flex;
+            width: unset;
+            border-radius: 25px;
+        }
     }
 
     .revision-banner .btn-link {

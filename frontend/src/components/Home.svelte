@@ -75,7 +75,7 @@
         max-width: 700px;
         height: 130px;
         resize: none;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
         padding: 1.5rem;
         border-color: #ddd;
         border-radius: 25px;
@@ -92,6 +92,7 @@
 
     @media (min-width: 768px) {
         .content-input {
+            margin-bottom: 2rem;
             font-size: 1.1rem;
         }
     }
