@@ -11,6 +11,6 @@
   {#if $currentPost.post.published}
     Publish
   {:else}
-    Save
+    Save draft
   {/if}
 </button>

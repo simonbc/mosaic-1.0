@@ -1,6 +1,5 @@
 <script>
     import { currentPost } from "@data/posts";
-    import { API_BASE } from "../../env";
 </script>
 
 <div class="publish-status">

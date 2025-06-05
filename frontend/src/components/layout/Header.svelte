@@ -1,5 +1,5 @@
 <script>
-    import { headerButtons } from '@data/uiStore.js';
+    import { headerNav } from '@data/uiStore.js';
 </script>
 
 <header class="app-header">
@@ -7,13 +7,9 @@
         <a href="/">mosaic</a>
     </div>
     <nav class="menu">
-        {#each $headerButtons as btn (btn.id)}
+        {#each $headerNav as btn (btn.id)}
             <svelte:component this={btn.component} {...btn.props} />
         {/each}
-        
-            <!-- <a href="#">about</a>
-            <a href="#">talk to us</a>
-         -->
     </nav>
 </header>
 

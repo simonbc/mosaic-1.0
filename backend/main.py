@@ -28,7 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/assets", StaticFiles(directory="../frontend/dist"), name="assets")
+app.mount("/static", StaticFiles(directory="../frontend/dist/static"), name="static")
 
 def datetimeformat(value):
     if isinstance(value, datetime):

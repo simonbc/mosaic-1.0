@@ -1,4 +1,5 @@
 import { defineConfig, loadEnv } from 'vite'
+import { viteStaticCopy } from 'vite-plugin-static-copy'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import path from 'path'
 
@@ -6,7 +7,17 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
   return {
-    plugins: [svelte()],
+    plugins: [
+      svelte(),
+      viteStaticCopy({
+        targets: [
+          {
+            src: 'static/*',
+            dest: 'static',
+          },
+        ],
+      }),
+    ],
     resolve: {
       alias: {
         '@components': path.resolve(__dirname, 'src/components'),
@@ -18,11 +29,11 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'dist',
-      assetsDir: 'assets',
+      assetsDir: 'static',
       emptyOutDir: true,
       rollupOptions: {
         output: {
-          assetFileNames: 'assets/[name][extname]',
+          assetFileNames: 'static/[name][extname]',
         },
       },
     },
@@ -31,8 +42,8 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_API_BASE': JSON.stringify(env.VITE_API_BASE || ''),
     },
     server: {
-        host: 'mosaic.localhost',
-        port: 5173,
+      host: 'mosaic.localhost',
+      port: 5173,
     },
   }
 })

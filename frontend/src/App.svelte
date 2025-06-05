@@ -25,8 +25,10 @@
 </script>
 
 <div class="app-main" role="main">
-     <Header />
-     <div class="app-container" class:editing={$editing}>
+    {#if $currentSlug}
+        <Header />
+    {/if}
+    <div class="app-container" class:editing={$editing}>
         <div class="app-content">   
             {#if $currentSlug}
                 <Post />

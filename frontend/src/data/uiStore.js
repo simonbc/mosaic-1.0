@@ -6,4 +6,5 @@ export const previewRevision = writable(null)
 export const showSidebar = derived(editing, ($editing) => !$editing)
 export const showPublishDialog = writable(false)
 
-export const headerButtons = writable([])
+export const headerNav = writable([])
+export const footerNav = writable([])

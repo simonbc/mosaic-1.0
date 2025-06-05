@@ -9,7 +9,7 @@
     import { navigateTo } from '../../routing.js'
     import { currentPost, createPost, updatePost, loadPost, fetchPost, publishPost } from '@data/posts.js'
     import { settings } from '@data/settingsStore.js'
-    import { previewRevision, editing, responding, headerButtons } from '@data/uiStore.js'
+    import { previewRevision, editing, responding, headerNav } from '@data/uiStore.js'
     import { shortcut } from '@actions/shortcut.js'
 
     const MIN_CONTENT_TEXTAREA_HEIGHT = 130
@@ -97,7 +97,7 @@
     }
 
     onMount(async () => {
-        headerButtons.set([
+        headerNav.set([
             { id: 'revisions', component: RevisionsButton, props: { toggleShowRevisions } },
             { id: 'preview', component: PreviewButton, props: { togglePreview } },
             { id: 'save', component: SaveButton, props: { onSave } },
@@ -149,7 +149,7 @@
         <textarea
         bind:this={contentTextarea}
         bind:value={content}
-        placeholder="Start writing..."
+        placeholder={$currentPost.post.parentId ? "Write your response..." : "Start writing..."}
         class="content-input"
         autofocus
         ></textarea>

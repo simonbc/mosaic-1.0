@@ -164,7 +164,7 @@ export async function loadPost(slug) {
 
   let parent = null
   if (post.parentId) {
-    parent = fetchPost(post.id)
+    parent = await fetchPost(post.parentId)
   }
 
   currentPost.set({

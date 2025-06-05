@@ -2,7 +2,9 @@
     import { onMount} from 'svelte'
     import { posts, createPost } from '@data/posts.js';
     import { navigateTo } from '../routing.js';
-    import { editing } from '@data/uiStore.js';
+    import { footerNav } from '@data/uiStore.js';
+
+    import FooterMenu from '@components/FooterMenu.svelte';
 
     let textareaEl
     let content
@@ -20,6 +22,10 @@
     }
 
     onMount(() => {
+        footerNav.set([
+            { id: 'footer-links', component: FooterMenu },
+        ])
+
         if (textareaEl) {
             textareaEl.focus()
         }
@@ -27,6 +33,7 @@
 </script>
 
 <section class="home">
+    <h1 class="logo">Mosaic</h1>
     <div class="container">
         <textarea
             bind:this={textareaEl}
@@ -68,7 +75,7 @@
         max-width: 700px;
         height: 130px;
         resize: none;
-        margin-bottom: 1rem;
+        margin-bottom: 2rem;
         padding: 1.5rem;
         border-color: #ddd;
         border-radius: 25px;

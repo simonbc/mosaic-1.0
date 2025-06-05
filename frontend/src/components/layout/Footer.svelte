@@ -1,3 +1,9 @@
+<script>
+    import { footerNav } from '@data/uiStore.js';
+</script>
+
 <footer class="footer">
-    <div>powered by <a href="/">mosaic</a></div>
+    {#each $footerNav as btn (btn.id)}
+        <svelte:component this={btn.component} {...btn.props} />
+    {/each}
 </footer>

@@ -29,7 +29,7 @@
     onSubmit={() => handlePublish()}
     show={showPublishDialog}
 />
-    {#if !$currentPost.post.published}
+    {#if !$currentPost?.post.published}
         <button class="btn btn-primary" on:click={() => toggleShowDialog()}>Publish</button>
     {/if}
 </div>

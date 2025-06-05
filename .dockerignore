@@ -1,15 +1,17 @@
 # Node-related
 frontend/node_modules
 frontend/.svelte-kit
-frontend/dist/assets/*.map
+frontend/dist/static/*.map
 frontend/.vite
 frontend/.DS_Store
+frontend/.env
 
 # Python-related
 backend/__pycache__/
 backend/*.pyc
 backend/.pytest_cache
 backend/venv/
+backend/.env
 
 # Database
 backend/published.db
