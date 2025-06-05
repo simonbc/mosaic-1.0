@@ -414,6 +414,15 @@ pre {
 }
 
 .logo {
+  font-weight: 800;
+  font-size: 1.5rem; /* adjust as needed */
+  background: linear-gradient(90deg, #065f46, #10b981, #d1fae5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.logo-home {
   margin-bottom: 0rem;
   font-weight: 800;
   font-size: 4rem; /* adjust as needed */

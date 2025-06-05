@@ -33,7 +33,7 @@
 </script>
 
 <section class="home">
-    <h1 class="logo">Mosaic</h1>
+    <h1 class="logo-home">Mosaic</h1>
     <div class="container">
         <textarea
             bind:this={textareaEl}

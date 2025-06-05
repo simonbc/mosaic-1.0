@@ -4,12 +4,14 @@
 
     import PublishDialog from './PublishDialog.svelte';
     import { navigateTo } from "../../routing"
+    import { shortcut } from '../../actions/shortcut.js'
+    import { onMount } from 'svelte';
 
     function toggleShowDialog() {
         showPublishDialog.update((e) => !e)
     }
 
-        let handle = '';
+    let handle = '';
     let byline = '';
 
     $: handle = $currentPost?.post.handle
@@ -21,14 +23,14 @@
         navigateTo(post.slug, handle)
     }
 </script>
-    
-<div class="publish-button">
+
+<div class="publish-button" use:shortcut={{ key: 'Escape', onPress: () => toggleShowDialog() }}>
     <PublishDialog
-    bind:handle
-    bind:byline
-    onSubmit={() => handlePublish()}
-    show={showPublishDialog}
-/>
+        bind:handle
+        bind:byline
+        onSubmit={() => handlePublish()}
+        show={showPublishDialog}
+    />
     {#if !$currentPost?.post.published}
         <button class="btn btn-primary" on:click={() => toggleShowDialog()}>Publish</button>
     {/if}
