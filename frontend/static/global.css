@@ -608,18 +608,3 @@ pre {
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--color-border);
 }
-
-body {
-  overflow-x: hidden;
-}
-
-img,
-pre,
-code,
-.post-content,
-.container,
-.app-main {
-  max-width: 100%;
-  overflow-wrap: break-word;
-  box-sizing: border-box;
-}
