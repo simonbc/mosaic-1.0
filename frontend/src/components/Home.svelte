@@ -33,7 +33,7 @@
 </script>
 
 <section class="home">
-    <h1 class="logo-home">Mosaic</h1>
+    <h1 class="logo-home"><a href="/">Mosaic</a></h1>
     <div class="container">
         <textarea
             bind:this={textareaEl}
@@ -66,23 +66,44 @@
         }
     }
 
+    .logo-home {
+        margin-bottom: 1.5rem;
+        font-weight: 800;
+        font-size: 2.2rem;
+        background: linear-gradient(90deg, #117a65, #28b463, #82e0aa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+        /* font-family: var(--font-mono); */
+    }
+
+    @media (min-width: 768px) {
+        .logo-home {
+            margin-bottom: 0;
+            font-size: 4rem;
+        }
+    }
+
+    .logo-home a {
+        text-decoration: none;
+    }
+
     .container {
         text-align: center;
     }
 
     .content-input {
         width: 100%;
-        max-width: 700px;
-        height: 130px;
+        min-height: 130px;
         resize: none;
         margin-bottom: 1rem;
         padding: 1.5rem;
         border-color: #ddd;
         border-radius: 25px;
         box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
-        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
         font-family: var(--font-mono);
         font-size: 1rem;
+        line-height: 1.9;
     }
 
     .content-input:focus {
@@ -94,6 +115,7 @@
         .content-input {
             margin-bottom: 2rem;
             font-size: 1.1rem;
+            max-width: 700px;
         }
     }
 </style>

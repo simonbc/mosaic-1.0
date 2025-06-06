@@ -220,25 +220,27 @@
     }
 
     .content-input {
-        padding: 1.5rem;
-        border: none;
-        overflow: hidden;
-        outline: none;
+        width: 100%;
+        min-height: 130px;
         resize: none;
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        line-height: 1.9;
-        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+        padding: 1.5rem;
         border-color: #ddd;
         border-radius: 25px;
-        resize: none;
-        min-width: calc(50vw - 90px);
-        min-height: 130px;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+        font-family: var(--font-mono);
+        font-size: 1rem;
+        line-height: 1.9;
+    }
+
+    .content-input:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px var(--color-accent);
     }
 
     @media (min-width: 768px) {
         .content-input {
             font-size: 1.1rem;
+            min-width: calc(50vw - 90px);
             max-width: 768px;
         }
     }

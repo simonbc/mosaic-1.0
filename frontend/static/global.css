@@ -50,6 +50,7 @@ html,
 body {
   margin: 0;
   padding: 0;
+  max-width: 100%;
   font-family: var(--font-body);
   font-size: var(--font-size);
   line-height: var(--line-height);
@@ -422,23 +423,6 @@ pre {
   display: inline-block;
 }
 
-.logo-home {
-  margin-bottom: 1.5rem;
-  font-weight: 800;
-  font-size: 2.5rem;
-  background: linear-gradient(90deg, #117A65, #28B463, #82E0AA);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline-block;
-}
-
-@media (min-width: 768px) {
-  .logo-home {
-    margin-bottom: 0;
-    font-size: 4rem;
-  }
-}
-
 /* .footer a {
   background: linear-gradient(90deg, #0E6655, #1ABC9C, #7DCEA0);
   -webkit-background-clip: text;
@@ -499,7 +483,6 @@ pre {
 .post-section {
   display: flex;
   flex-direction: column;
-  
 }
 
 @media (min-width: 768px) {
@@ -625,4 +608,18 @@ pre {
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--color-border);
 }
-t
+
+body {
+  overflow-x: hidden;
+}
+
+img,
+pre,
+code,
+.post-content,
+.container,
+.app-main {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+}
