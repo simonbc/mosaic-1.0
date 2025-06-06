@@ -36,8 +36,11 @@ export function createPost({
   content = '',
   parentId = null,
   cursorPosition = 0,
+  slug = null,
 }) {
-  const slug = crypto.randomUUID()
+  if (!slug) {
+    slug = crypto.randomUUID()
+  }
 
   const revisionId = crypto.randomUUID()
   const timestamp = Date.now()
@@ -224,8 +227,6 @@ export async function publishPost(post, revision) {
     signature,
     public_key: publicHex,
   })
-
-  console.log(revision)
 
   try {
     const { id } = await apiFetch(`/api/post/${post.handle}/${post.slug}`, {
