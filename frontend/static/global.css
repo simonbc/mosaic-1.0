@@ -121,6 +121,7 @@ a:hover {
   letter-spacing: 0.02em;
   font-weight: 500;
   text-decoration: none;
+  outline: 0;
 }
 
 .btn:hover {
