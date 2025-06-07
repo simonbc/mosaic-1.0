@@ -31,7 +31,9 @@
                       >
                     </a>
                   </div>
-                  {% endif %} {{ post.revision.content | markdown | safe }}
+                  {% endif %}
+
+                  <div>{{ post.revision.content | markdown | safe }}</div>
 
                   <div class="post-meta">
                     <div>
@@ -45,7 +47,7 @@
                   <a
                     class="btn btn-link btn-sm"
                     href="{{ spa_base }}/@{{ post.handle }}/{{ post.slug }}/respond"
-                    >Post a response</a
+                    >Respond</a
                   >
                 </div>
                 {% if post.responses %}
