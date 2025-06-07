@@ -5,6 +5,8 @@
 <div class="publish-status">
     {#if $currentPost?.post.published}
         <span>Published</span>
+        {:else}
+        <span>Draft</span>
     {/if}
 </div>
 

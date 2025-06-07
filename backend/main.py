@@ -35,7 +35,7 @@ def datetimeformat(value):
         return value.strftime("%-I:%M %p · %d %B %Y")
     elif isinstance(value, str):
         try:
-            return datetime.fromisoformat(value).strftime("%-I:%M · %d %B %Y")
+            return datetime.fromisoformat(value).strftime("%d %B %Y · %H:%M")
         except ValueError:
             return value
     return value
@@ -46,6 +46,13 @@ templates.env.filters['markdown'] = markdown
 @app.get("/api/post/{id}")
 async def api_get_post(id: int):
     post = get_post(id)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return post
+
+@app.get("/api/post/{handle}/{slug}")
+async def api_get_post(handle: str, slug: str):
+    post = get_post_by_slug(handle, slug)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
     return post

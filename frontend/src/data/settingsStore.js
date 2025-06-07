@@ -4,6 +4,7 @@ const initial = {
   showPreview: false,
   showRevisions: false,
   showButtons: true,
+  handle: '',
 }
 
 const stored = localStorage.getItem('settings')

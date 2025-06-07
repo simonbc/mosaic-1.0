@@ -38,8 +38,11 @@
                   <div class="post-meta">
                     <div>
                       by
-                      <a href="#">{{ post.byline or post.handle }}</a>
-                      – {{ post.created_at[:10] }}
+                      <a href="#"
+                        >{{ post.byline if post.byline else '@' + post.handle
+                        }}</a
+                      >
+                      · {{ post.updated_at | datetimeformat }}
                     </div>
                   </div>
                 </div>
@@ -50,7 +53,7 @@
                     >Respond</a
                   >
                 </div>
-                {% if post.responses %}
+                {% if post.responses | length %}
                 <div class="post-responses-container">
                   {% for response in post.responses %}
                   <div class="post-response-wrapper">
@@ -65,9 +68,10 @@
                         <div>
                           by
                           <a href="#"
-                            >{{ response.byline or response.handle }}</a
+                            >{{ response.byline if response.byline else '@' +
+                            response.handle }}</a
                           >
-                          – {{ response.created_at[:10] }}
+                          · {{ response.updated_at | datetimeformat }}
                         </div>
                       </div>
                     </div>

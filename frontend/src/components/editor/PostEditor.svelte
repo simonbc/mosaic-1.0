@@ -6,8 +6,8 @@
     import PreviewButton from './PreviewButton.svelte';
     import SaveButton from './SaveButton.svelte';
 
-    import { navigateTo } from '../../routing.js'
-    import { currentPost, createPost, updatePost, loadPost, fetchPost, publishPost } from '@data/posts.js'
+    import { navigateTo, currentHandle, currentSlug } from '../../routing.js'
+    import { currentPost, createPost, updatePost, loadPost, fetchPublicPost, publishPost } from '@data/posts.js'
     import { settings } from '@data/settingsStore.js'
     import { previewRevision, editing, responding, headerNav } from '@data/uiStore.js'
     import { shortcut } from '@actions/shortcut.js'
@@ -66,6 +66,11 @@
                 navigateTo(post.slug, post.handle)
             }
 
+            if ($responding) {
+                responding.set(false)
+                navigateTo(post.slug, post.handle)
+            }
+
             await loadPost(post.slug);
             previewRevision.set(null)
         }
@@ -102,14 +107,11 @@
             { id: 'preview', component: PreviewButton, props: { togglePreview } },
             { id: 'save', component: SaveButton, props: { onSave } },
         ]);
-
-        if ($responding && $currentPost.post.id) {
-            const post = await fetchPost($currentPost.post.id)
+        if ($responding && $currentSlug) {
+            const post = await fetchPublicPost($currentHandle, $currentSlug)
             const newSlug = await createPost({ parentId: post.id });
             await loadPost(newSlug)
-            responding.set(false)
             editing.set(true)
-            navigateTo(newSlug)
         }
 
         if ($previewRevision) {
@@ -220,27 +222,25 @@
     }
 
     .content-input {
-        width: 100%;
-        min-height: 130px;
-        resize: none;
         padding: 1.5rem;
+        border: none;
+        overflow: hidden;
+        outline: none;
+        resize: none;
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        line-height: 1.9;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
         border-color: #ddd;
         border-radius: 25px;
-        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
-        font-family: var(--font-mono);
-        font-size: 1rem;
-        line-height: 1.9;
-    }
-
-    .content-input:focus {
-        outline: none;
-        box-shadow: 0 0 0 2px var(--color-accent);
+        resize: none;
+        min-width: calc(50vw - 90px);
+        min-height: 130px;
     }
 
     @media (min-width: 768px) {
         .content-input {
             font-size: 1.1rem;
-            min-width: calc(50vw - 90px);
             max-width: 768px;
         }
     }

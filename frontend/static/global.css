@@ -424,6 +424,13 @@ pre {
   display: inline-block;
 }
 
+.logo {
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  padding-bottom: 6px;
+}
+
 /* .footer a {
   background: linear-gradient(90deg, #0E6655, #1ABC9C, #7DCEA0);
   -webkit-background-clip: text;

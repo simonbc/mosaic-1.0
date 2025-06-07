@@ -17,7 +17,7 @@
     <article class="post">
         {#if $currentPost || $responding && $currentSlug}
             <div class="post-shortcuts" use:shortcut={{ key: 'e', meta: true, onPress: () => toggleEditing() }}>
-                {#if $editing || $responding}
+                {#if $editing}
                     <PostEditor />
                 {:else}
                     <PostViewer />

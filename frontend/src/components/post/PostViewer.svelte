@@ -5,6 +5,7 @@
     import PublishStatus from './PublishStatus.svelte';
     import EditButton from './EditButton.svelte';
     import PublishButton from './PublishButton.svelte';
+    import PostMeta from './PostMeta.svelte'
 
     import { previewRevision, headerNav } from '@data/uiStore.js';
     import { currentPost } from '@data/posts.js';
@@ -36,17 +37,32 @@
                 ? $previewRevision.content
                 : $currentPost.revision.content
       )}
-      <div class="post-meta">
-        {new Date($currentPost.post.updatedAt).toLocaleTimeString(undefined, {
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: false
-        })} · {new Date($currentPost.post.updatedAt).toLocaleDateString(undefined, {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        })}
-        {$currentPost.byline ? ` · ${$currentPost.byline}` : ''}
-      </div>
+      <PostMeta post={$currentPost.post} />
+      {#if $currentPost.post.published}
+        <div class="post-respond">
+          <a
+            class="btn btn-link btn-sm"
+            href="/@{$currentPost.post.handle}/{$currentPost.post.slug}/respond"
+            >Respond</a
+          >
+        </div>
+      {/if}
+      {#if $currentPost.responses}
+        <div class="post-responses-container">
+          {#each $currentPost.responses as response}
+            <div class="post-response-wrapper">
+              <div class="post-content">
+                <a
+                  href="/@{response.handle}/{response.slug}"
+                  class="post-response-link"
+                >
+                  {response.content}
+                </a>
+                <PostMeta post={{ ... response, updatedAt: response.updated_at}} />
+              </div>
+            </div>
+          {/each}
+        </div>
+        {/if}
     </div>
 </section>

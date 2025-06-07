@@ -1,11 +1,11 @@
 <script>
-    import { currentPost, publishPost } from "@data/posts.js";
-    import { showPublishDialog } from '@data/uiStore.js';    
+    import { currentPost, publishPost } from "@data/posts"
+    import { showPublishDialog } from '@data/uiStore'
+    import { settings } from '@data/settingsStore'
 
-    import PublishDialog from './PublishDialog.svelte';
+    import PublishDialog from './PublishDialog.svelte'
     import { navigateTo } from "../../routing"
-    import { shortcut } from '../../actions/shortcut.js'
-    import { onMount } from 'svelte';
+    import { shortcut } from '../../actions/shortcut'
 
     function toggleShowDialog() {
         showPublishDialog.update((e) => !e)
@@ -14,12 +14,13 @@
     let handle = '';
     let byline = '';
 
-    $: handle = $currentPost?.post.handle
+    $: handle = $currentPost?.post.handle || $settings.handle
     $: byline = $currentPost?.post.byline
 
     async function handlePublish() {
         const { post, revision } = $currentPost;
         await publishPost({ ...post, handle, byline }, revision)
+        await settings.update(s => ({ ...s, handle }))
         navigateTo(post.slug, handle)
     }
 </script>

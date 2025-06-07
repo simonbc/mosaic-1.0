@@ -112,7 +112,7 @@ def get_post(id: int):
     """, (id,))
     row = cursor.fetchone()
     if row:
-        return {
+        post = {
             "id": row[0],
             "handle": row[1],
             "slug": row[2],
@@ -126,6 +126,9 @@ def get_post(id: int):
                 "created_at": row[9]
             },
         }
+
+        post["responses"] = get_responses(post["id"])
+        return post
     return None
 
 def save_revision(revision):
@@ -177,49 +180,39 @@ def get_post_by_slug(handle: str, slug: str):
             }
         }
 
-        # Fetch responses
-        cursor.execute("""
-            SELECT
-                p.id, p.handle, p.slug, p.byline,
-                r.content, r.created_at
-            FROM posts p
-            JOIN revisions r ON r.id = (
-                SELECT id FROM revisions
-                WHERE post_id = p.id
-                ORDER BY id DESC
-                LIMIT 1
-            )
-            WHERE p.parent_id = ?
-            ORDER BY r.created_at DESC
-        """, (post["id"],))
-        children = cursor.fetchall()
-        post["responses"] = [
-            {
-                "id": c[0],
-                "handle": c[1],
-                "slug": c[2],
-                "byline": c[3],
-                "content": c[4],
-                "created_at": c[5]
-            } for c in children
-        ]
+        post["responses"] = get_responses(post["id"])
         return post
     return None
 
-def get_revisions_by_post_id(post_id: str):
+def get_responses(post_id: int):
+    # Fetch responses
     cursor.execute("""
-        SELECT id, content, created_at
-        FROM revisions
-        WHERE post_id = ?
-        ORDER BY created_at DESC
+        SELECT
+            p.id, p.handle, p.slug, p.byline,
+            r.content, r.created_at, r.updated_at
+        FROM posts p
+        JOIN revisions r ON r.id = (
+            SELECT id FROM revisions
+            WHERE post_id = p.id
+            ORDER BY id DESC
+            LIMIT 1
+        )
+        WHERE p.parent_id = ?
+        ORDER BY r.created_at DESC
     """, (post_id,))
-    rows = cursor.fetchall()
-    return [{
-        "id": row[0],
-        "content": row[1],
-        "created_at": row[2]
-    } for row in rows]
-
+    children = cursor.fetchall()
+    return [
+        {
+            "id": c[0],
+            "handle": c[1],
+            "slug": c[2],
+            "byline": c[3],
+            "content": c[4],
+            "created_at": c[5],
+            "updated_at": c[6]
+        } for c in children
+    ]
+    return
 
 def verify_or_register_handle(handle, public_key, signature):
     message = handle.encode('utf-8')

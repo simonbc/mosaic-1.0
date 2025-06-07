@@ -2,6 +2,7 @@ import { writable } from 'svelte/store'
 
 import { editing, responding } from '@data/uiStore'
 
+export const currentHandle = writable('')
 export const currentSlug = writable('')
 
 export function updateRoute() {
@@ -11,23 +12,26 @@ export function updateRoute() {
   editing.set(false)
   responding.set(false)
 
+  let handle
   let slug = ''
   if (segments.length === 1) {
     // /{slug}
     slug = segments[0]
-  } else if (segments.length === 2) {
-    // /{handle}/{slug}
+  } else {
+    handle = segments[0].slice(1) // remove leading @
     slug = segments[1]
-  } else if (segments.length === 3) {
-    // /{handle}/{slug}/edit or /respond
-    slug = segments[1]
-    if (segments[2] === 'edit') {
-      editing.set(true)
-    } else if (segments[2] === 'respond') {
-      responding.set(true)
+
+    if (segments.length === 3) {
+      if (segments[2] === 'edit') {
+        editing.set(true)
+      } else if (segments[2] === 'respond') {
+        responding.set(true)
+        editing.set(true)
+      }
     }
   }
 
+  currentHandle.set(decodeURIComponent(handle || ''))
   currentSlug.set(decodeURIComponent(slug || ''))
 }
 

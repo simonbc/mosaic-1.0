@@ -12,12 +12,3 @@
         {/each}
     </nav>
 </header>
-
-<style>
-    .logo {
-        display: flex;
-        align-items: center;
-        line-height: 1;
-        padding-bottom: 6px;
-    }
-</style>

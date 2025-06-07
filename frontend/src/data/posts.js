@@ -151,10 +151,8 @@ export async function loadPost(slug) {
     return currentPost
   }
 
-  let parent = null
-  if (post.parentId) {
-    parent = await fetchPost(post.parentId)
-  }
+  const { responses = [] } = post.id ? await fetchPost(post.id) : {}
+  const parent = post.parentId ? await fetchPost(post.parentId) : null
 
   currentPost.set({
     post,
@@ -163,6 +161,7 @@ export async function loadPost(slug) {
     revisions: Object.values(allRevisions)
       .filter((r) => r.postId === post.id)
       .sort((a, b) => b.createdAt - a.createdAt),
+    responses,
   })
 
   return currentPost
@@ -172,6 +171,16 @@ export async function fetchPost(postId) {
   if (!postId) return null
   try {
     return await apiFetch(`/api/post/${postId}`)
+  } catch (err) {
+    console.error('Failed to fetch post:', err)
+    return null
+  }
+}
+
+export async function fetchPublicPost(handle, slug) {
+  if (!handle || !slug) return null
+  try {
+    return await apiFetch(`/api/post/${handle}/${slug}`)
   } catch (err) {
     console.error('Failed to fetch post:', err)
     return null
