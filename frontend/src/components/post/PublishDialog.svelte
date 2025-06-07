@@ -39,6 +39,7 @@
           <input
             type="text"
             bind:value={handle}
+            on:input={() => handle = handle.toLowerCase()}
             class="handle-input"
             placeholder="pick a handle"
           />
@@ -87,17 +88,17 @@
     gap: 0.75rem;
     padding: 2rem;
     background: #fff;
-    border: 1px solid #ddd;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    margin: 0 auto;
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 100%;
     z-index: 11;
   }
 
   @media (min-width: 768px) {
     .publish-dialog {
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      margin: 0 auto;
       border-radius: 25px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       padding: 5rem;
@@ -124,8 +125,8 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     background: rgba(0, 0, 0, 0.3);
     display: flex;
     justify-content: center;
@@ -134,7 +135,13 @@
   }
 
   .overlay-close {
-    position:fixed;top:0;left:0;width:100vw;height:100vh;opacity:0;z-index:9;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 9;
   }
 
   .actions {
