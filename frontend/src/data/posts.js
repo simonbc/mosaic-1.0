@@ -116,16 +116,6 @@ export function updatePost(postId, { content, cursorPosition }) {
   return revId
 }
 
-export function findPostIdBySlug(slug) {
-  const allPosts = get(posts)
-  for (const id in allPosts) {
-    if (allPosts[id].slug === slug) {
-      return id
-    }
-  }
-  return null
-}
-
 export async function waitFor(store) {
   if (get(store)) return
 
@@ -148,20 +138,16 @@ export async function loadPost(slug) {
   await Promise.all([waitFor(posts), waitFor(revisions)])
 
   const allPosts = get(posts)
-  const allRevisions = get(revisions)
-
-  const postId = findPostIdBySlug(slug)
-  if (!postId) {
+  const post = allPosts[slug] ?? null
+  if (!post) {
     currentPost.set(null)
     return currentPost
   }
 
-  const post = allPosts[postId]
-  const revision = allRevisions[post.latestRevisionId]
-
-  if (!post || !revision) {
+  const allRevisions = get(revisions)
+  const revision = allRevisions[post.latestRevisionId] ?? null
+  if (!revision) {
     currentPost.set(null)
-
     return currentPost
   }
 
@@ -175,7 +161,7 @@ export async function loadPost(slug) {
     revision,
     parent,
     revisions: Object.values(allRevisions)
-      .filter((r) => r.postId === postId)
+      .filter((r) => r.postId === post.id)
       .sort((a, b) => b.createdAt - a.createdAt),
   })
 
