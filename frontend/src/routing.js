@@ -8,15 +8,27 @@ export function updateRoute() {
   let path = window.location.pathname.slice(1) // remove leading slash
   const segments = path.split('/')
 
-  if (segments.length === 2 && segments[1] === 'edit') {
-    path = segments[0]
-    editing.set(true)
-  } else if (segments.length === 3 && segments[2] === 'respond') {
-    path = segments[1]
-    responding.set(true)
+  editing.set(false)
+  responding.set(false)
+
+  let slug = ''
+  if (segments.length === 1) {
+    // /{slug}
+    slug = segments[0]
+  } else if (segments.length === 2) {
+    // /{handle}/{slug}
+    slug = segments[1]
+  } else if (segments.length === 3) {
+    // /{handle}/{slug}/edit or /respond
+    slug = segments[1]
+    if (segments[2] === 'edit') {
+      editing.set(true)
+    } else if (segments[2] === 'respond') {
+      responding.set(true)
+    }
   }
 
-  currentSlug.set(decodeURIComponent(path || ''))
+  currentSlug.set(decodeURIComponent(slug || ''))
 }
 
 export function navigateTo(slug, handle = null) {
