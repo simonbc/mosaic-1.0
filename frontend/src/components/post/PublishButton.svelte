@@ -19,7 +19,7 @@
 
     async function handlePublish() {
         const { post, revision } = $currentPost;
-        publishPost({ ...post, handle, byline }, revision)
+        await publishPost({ ...post, handle, byline }, revision)
         navigateTo(post.slug, handle)
     }
 </script>
