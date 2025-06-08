@@ -59,7 +59,7 @@
       left: 50%;
       transform: translateX(-50%);
       margin-top: 8px;
-      z-index: 10;
+      z-index: 100;
     }
 
     .revisions-wrapper::before {
