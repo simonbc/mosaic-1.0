@@ -1,7 +1,7 @@
 import { openDB } from 'idb'
 
-const DB_NAME = 'mosaic-db'
-const DB_VERSION = 3
+const DB_NAME = 'mosaic'
+const DB_VERSION = 1
 
 const POSTS_STORE = 'posts'
 const REVISIONS_STORE = 'revisions'
@@ -23,22 +23,52 @@ export async function getDb() {
 
 export async function loadPosts() {
   const db = await getDb()
-  return (await db.get(POSTS_STORE, 'all')) || {}
+  const tx = db.transaction(POSTS_STORE, 'readonly')
+  const store = tx.store
+  const allPosts = await store.getAll()
+  const posts = {}
+  for (const post of allPosts) {
+    posts[post.slug] = post
+  }
+  return posts
 }
 
 export async function savePosts(posts) {
   const db = await getDb()
-  await db.put(POSTS_STORE, posts, 'all')
+  const tx = db.transaction(POSTS_STORE, 'readwrite')
+  const store = tx.store
+  for (const slug in posts) {
+    const post = posts[slug]
+    if (post?.slug != null) {
+      await store.put(post, post.slug)
+    }
+  }
+  await tx.done
 }
 
 // ---- Revisions ----
 
 export async function loadRevisions() {
   const db = await getDb()
-  return (await db.get(REVISIONS_STORE, 'all')) || {}
+  const tx = db.transaction(REVISIONS_STORE, 'readonly')
+  const store = tx.store
+  const allRevisions = await store.getAll()
+  const revisions = {}
+  for (const revision of allRevisions) {
+    revisions[revision.id] = revision
+  }
+  return revisions
 }
 
 export async function saveRevisions(revisions) {
   const db = await getDb()
-  await db.put(REVISIONS_STORE, revisions, 'all')
+  const tx = db.transaction(REVISIONS_STORE, 'readwrite')
+  const store = tx.store
+  for (const id in revisions) {
+    const revision = revisions[id]
+    if (revision?.id != null) {
+      await store.put(revision, revision.id)
+    }
+  }
+  await tx.done
 }
