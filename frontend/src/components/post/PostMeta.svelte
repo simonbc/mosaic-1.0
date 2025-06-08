@@ -4,8 +4,10 @@
 
 <div class="post-meta">
     <div>
-        by <a href="#">{post.byline || `@${post.handle}`}</a>
-         · {new Date(post.updatedAt).toLocaleDateString(undefined, {
+        {#if post.byline || post.handle}
+            by <a href="#">{post.byline || `@${post.handle}`}</a> ·
+        {/if}
+        {new Date(post.updatedAt).toLocaleDateString(undefined, {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
