@@ -89,6 +89,8 @@
     padding: 2rem;
     background: #fff;
     position: relative;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     z-index: 11;
@@ -102,6 +104,8 @@
       border-radius: 25px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       padding: 5rem;
+      top: unset;
+      left: unset;
       width: unset;
       height: unset;
     }
