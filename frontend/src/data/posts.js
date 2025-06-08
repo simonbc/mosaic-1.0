@@ -159,7 +159,7 @@ export async function loadPost(slug) {
     revision,
     parent,
     revisions: Object.values(allRevisions)
-      .filter((r) => r.postId === post.id)
+      .filter((r) => r.postId === post.slug)
       .sort((a, b) => b.createdAt - a.createdAt),
     responses,
   })
