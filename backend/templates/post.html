@@ -92,8 +92,8 @@
       </footer>
     </div>
     <script type="module">
-      const DB_NAME = 'mosaic-db'
-      const DB_VERSION = 3
+      const DB_NAME = 'mosaic'
+      const DB_VERSION = 4
       const slug = '{{ post.slug }}'
 
       async function checkAndRedirect() {
@@ -106,21 +106,21 @@
 
           const tx = db.transaction('posts', 'readonly')
           const store = tx.objectStore('posts')
-          const getRequest = store.get('all')
+          const getRequest = store.get(slug)
 
           getRequest.onsuccess = (event) => {
-            const allPosts = event.target.result
-            if (allPosts && allPosts[slug]) {
+            const post = event.target.result
+            if (post) {
               const header = document.querySelector('.app-header')
               const editButton = document.createElement('a')
-              editButton.href = `/{{ post.slug }}/edit`
+              editButton.href = `/@${post.handle}/${post.slug}/edit`
               editButton.textContent = 'Edit'
               editButton.className = 'btn btn-secondary'
               header.appendChild(editButton)
             }
           }
         } catch (e) {
-          return
+          console.error('IndexedDB error:', e)
         }
       }
 

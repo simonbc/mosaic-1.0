@@ -1,7 +1,7 @@
 import { openDB } from 'idb'
 
 const DB_NAME = 'mosaic'
-const DB_VERSION = 1
+const DB_VERSION = 4
 
 const POSTS_STORE = 'posts'
 const REVISIONS_STORE = 'revisions'
