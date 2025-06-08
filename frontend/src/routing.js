@@ -9,8 +9,8 @@ export function updateRoute() {
   let path = window.location.pathname.slice(1) // remove leading slash
   const segments = path.split('/')
 
-  editing.set(false)
-  responding.set(false)
+  // editing.set(false)
+  // responding.set(false)
 
   let handle
   let slug = ''

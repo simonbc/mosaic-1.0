@@ -100,6 +100,7 @@
         toggleShowRevisions(false);
         saveCursorPosition()
         savePost()
+        navigateTo($currentPost.post.slug, $currentPost.post.handle)
     }
 
     onMount(async () => {
@@ -113,6 +114,7 @@
             const newSlug = await createPost({ parentId: post.id });
             await loadPost(newSlug)
             editing.set(true)
+            responding.set(false)
         }
 
         if ($previewRevision) {
@@ -129,6 +131,7 @@
     })
 </script>
 
+{#if !$responding}
 <main
   class="split-container" use:shortcut={{ key: 'p', meta: true, onPress: togglePreview }}
 >
@@ -164,7 +167,7 @@
         </div>
     </div>
 </main>
-
+{/if}
 <style>
     .split-container {
         padding: 1rem 0;    
