@@ -35,7 +35,7 @@ revisions.subscribe((currentRevisions) => {
 export function createPost({
   content = '',
   parentId = null,
-  cursorPosition = 0,
+  cursorPosition = null,
   slug = null,
 }) {
   if (!slug) {
