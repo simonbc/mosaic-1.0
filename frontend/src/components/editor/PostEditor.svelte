@@ -22,14 +22,15 @@
 
     $: previewVisible = $settings.showPreview
 
-    $: if (contentTextarea) {
-        const pos = $currentPost.post.cursorPosition || $currentPost.revision.content.length
-        contentTextarea.setSelectionRange(pos, pos)
-        scrollTextareaToCaret(contentTextarea)
+    // Ensure textarea resizes when content is updated programmatically
+    $: if (content !== undefined) {
+        requestAnimationFrame(resizeContent);
     }
+
 
     // For auto-expanding textarea
     function resizeContent() {
+        console.log('Resizing content textarea')
         if (contentTextarea) {
             contentTextarea.style.height = 'auto';
             const height = Math.max(contentTextarea.scrollHeight + 20, MIN_CONTENT_TEXTAREA_HEIGHT)
@@ -124,6 +125,14 @@
         }
         
         resizeContent();
+
+        if (contentTextarea) {
+            const pos = $currentPost.post.cursorPosition || $currentPost.revision.content.length;
+            requestAnimationFrame(() => {
+                contentTextarea.setSelectionRange(pos, pos);
+                scrollTextareaToCaret(contentTextarea);
+            });
+        }
     });
 
     onDestroy(() => {
