@@ -25,7 +25,11 @@
     }
 </script>
 
-<div class="publish-button" use:shortcut={{ key: 'Escape', onPress: () => toggleShowDialog() }}>
+<div
+    class="publish-button"
+    use:shortcut={{ key: 'Escape', onPress: () => toggleShowDialog() }}
+    use:shortcut={{ key: 'Enter', meta: true,  onPress: () => toggleShowDialog() }}
+>
     <PublishDialog
         bind:handle
         bind:byline
