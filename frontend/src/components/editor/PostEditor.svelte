@@ -142,7 +142,9 @@
 
 {#if !$responding}
 <main
-  class="split-container" use:shortcut={{ key: 'p', meta: true, onPress: togglePreview }}
+  class="split-container"
+  use:shortcut={{ key: 'p', meta: true, onPress: togglePreview }}
+  use:shortcut={{ key: 'r', meta: true, onPress: () => toggleShowRevisions() }}
 >
     {#if $previewRevision}
         <div class="revision-banner">

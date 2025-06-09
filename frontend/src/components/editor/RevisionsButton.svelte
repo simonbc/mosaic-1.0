@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
 
-  import { editing } from "@data/uiStore";
+  import { editing, cmdState } from "@data/uiStore";
   import { settings } from '@data/settingsStore.js';
   import { currentPost } from '@data/posts';
   import Revisions from './Revisions.svelte';
@@ -23,8 +23,16 @@
 
 {#if $currentPost.revisions.length > 1}
     <div class="revisions-container">
-        <button class="btn btn-secondary" bind:this={dropdownRef} on:click={() => toggleShowRevisions()}>
-            Revisions
+        <button
+          class="btn btn-secondary"
+          class:cmd-visible={$cmdState.cmd}
+          bind:this={dropdownRef}
+          on:click={() => toggleShowRevisions()}
+        >
+          <span class="btn-label">Revisions</span>
+          {#if $cmdState.showHint}
+            <span class="shortcut-hint">⌘R</span>
+          {/if}
         </button>
         <Revisions />
     </div>

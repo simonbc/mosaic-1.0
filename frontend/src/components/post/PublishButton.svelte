@@ -1,6 +1,6 @@
 <script>
     import { currentPost, publishPost } from "@data/posts"
-    import { showPublishDialog } from '@data/uiStore'
+    import { showPublishDialog, cmdState } from '@data/uiStore'
     import { settings } from '@data/settingsStore'
 
     import PublishDialog from './PublishDialog.svelte'
@@ -37,7 +37,16 @@
         show={showPublishDialog}
     />
     {#if !$currentPost?.post.published}
-        <button class="btn btn-primary" on:click={() => toggleShowDialog()}>Publish</button>
+        <button class="btn btn-primary" class:cmd-visible={$cmdState.cmd} on:click={() => toggleShowDialog()}>
+            <span class="btn-label">
+                Publish
+            </span>
+            {#if $cmdState.showHint}
+                <span class="shortcut-hint">
+                ⌘↩︎
+                </span>
+            {/if}            
+        </button>
     {/if}
 </div>
 

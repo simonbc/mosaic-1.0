@@ -107,6 +107,7 @@ a:hover {
 /* ======================== */
 
 .btn {
+  position: relative;
   display: inline-block;
   font-family: inherit;
   font-size: 0.9rem;
@@ -206,6 +207,28 @@ button:disabled {
   font-size: 0.9rem;
 }
 
+.btn.cmd-visible {
+  padding-right: 2.8rem;
+}
+
+.btn.cmd-visible .btn-label {
+  opacity: 0.3;
+}
+
+.shortcut-hint {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  font-size: 0.85em;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.shortcut-hint.visible {
+}
 /* Forms */
 input,
 select,

@@ -21,7 +21,6 @@
 
 {#if $currentPost!== undefined && $settings.showRevisions}
     <div class="overlay" on:click={() => settings.update(s => ({ ...s, showRevisions: false }))}></div>
-    <div use:shortcut={{ key: 'h', meta: true, onPress: () => toggleShowRevisions() }}>
         <div class="revisions-wrapper">
             <div class="revisions-dropdown">
             <div class="revisions-scroll">
@@ -46,7 +45,6 @@
                     </li>
                     {/each}
                 </ul>
-            </div>
             </div>
         </div>
     </div>
