@@ -12,9 +12,7 @@
     import { previewRevision, editing, responding, headerNav } from '@data/uiStore.js'
     import { shortcut } from '@actions/shortcut.js'
 
-    const MIN_CONTENT_TEXTAREA_HEIGHT = 130
-
-    let contentTextarea;
+    let contentEditable;
     let content;
     let cursorPosition = null
 
@@ -22,35 +20,8 @@
 
     $: previewVisible = $settings.showPreview
 
-    // Ensure textarea resizes when content is updated programmatically
-    $: if (content !== undefined) {
-        requestAnimationFrame(resizeContent);
-    }
-
-
-    // For auto-expanding textarea
-    function resizeContent() {
-        console.log('Resizing content textarea')
-        if (contentTextarea) {
-            contentTextarea.style.height = 'auto';
-            const height = Math.max(contentTextarea.scrollHeight + 20, MIN_CONTENT_TEXTAREA_HEIGHT)
-            contentTextarea.style.height = height + 'px';
-        }
-    }
-
-    function scrollTextareaToCaret(el) {
-        if (!el) return
-        const { selectionStart } = el
-        // Scroll so caret is visible
-        const lineHeight = parseInt(getComputedStyle(el).lineHeight) || 16
-        const paddingTop = parseInt(getComputedStyle(el).paddingTop) || 0
-        const scrollPos = lineHeight * (el.value.substr(0, selectionStart).split('\n').length - 1)
-        el.scrollTop = scrollPos - paddingTop
-    }
-
     async function togglePreview() {
         await settings.update(s => ({ ...s, showPreview: !s.showPreview }))
-        resizeContent();
     }
 
     function toggleShowRevisions(value = null) {
@@ -59,12 +30,22 @@
     }
 
     async function savePost() {
-        if (content.trim() !== $currentPost.revision.content) {
-            await updatePost($currentPost.post.slug, { content, cursorPosition });
+        const normalizedContent = content
+          .split('\n')
+          .filter((line, idx, arr) => {
+            if (line.trim() !== '') return true;
+            return arr[idx - 1]?.trim() !== '';
+          })
+          .join('\n');
+
+        const trimmedContent = normalizedContent.replace(/\n+$/, '');
+        if (trimmedContent !== $currentPost.revision.content) {
+            console.log('Saving post content:', cursorPosition);
+            await updatePost($currentPost.post.slug, { content: trimmedContent, cursorPosition });
 
             const { post, revision } = $currentPost
             if ($currentPost.post.published) {
-                publishPost(post, { ...revision, content })
+                publishPost(post, { ...revision, content: trimmedContent })
                 navigateTo(post.slug, post.handle)
             }
 
@@ -79,7 +60,69 @@
     }
 
     function saveCursorPosition() {
-        cursorPosition = contentTextarea?.selectionStart || 0
+      const selection = window.getSelection();
+      if (!selection || !selection.anchorNode) return;
+
+      const range = selection.getRangeAt(0);
+      const preCaretRange = range.cloneRange();
+      preCaretRange.selectNodeContents(contentEditable);
+      preCaretRange.setEnd(range.endContainer, range.endOffset);
+      cursorPosition = preCaretRange.toString().length;
+      console.log('Saving cursor position:', cursorPosition);
+    }
+
+    function restoreCursorPosition() {
+      if (!contentEditable || cursorPosition === null) return;
+
+      let offset = cursorPosition;
+      const walker = document.createTreeWalker(
+        contentEditable,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+      );
+
+      let node = null;
+      while ((node = walker.nextNode())) {
+        if (node.length >= offset) {
+          const range = document.createRange();
+          const selection = window.getSelection();
+
+          range.setStart(node, offset);
+          range.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(range);
+
+          // --- Ensure caret is scrolled into view after positioning ---
+          const caretRect = range.getBoundingClientRect();
+          const buffer = 100;
+          const visibleBottom = window.innerHeight;
+
+          if (caretRect.bottom > visibleBottom - buffer) {
+            window.scrollBy({
+              top: caretRect.bottom - (visibleBottom - buffer),
+              behavior: 'smooth'
+            });
+          }
+          // -----------------------------------------------------------
+          return;
+        } else {
+          offset -= node.length;
+        }
+      }
+    }
+
+    function nudgeIfNearBottom() {
+        const caretRect = window.getSelection().getRangeAt(0).getBoundingClientRect();
+        const buffer = 100;
+        const visibleBottom = window.innerHeight;
+
+        if (caretRect.bottom > visibleBottom - buffer) {
+            window.scrollBy({
+            top: caretRect.bottom - (visibleBottom - buffer),
+            behavior: 'smooth'
+            });
+        }
     }
 
     async function confirmRestore() {
@@ -99,7 +142,6 @@
 
     function onSave() {
         toggleShowRevisions(false);
-        saveCursorPosition()
         savePost()
         navigateTo($currentPost.post.slug, $currentPost.post.handle)
     }
@@ -121,18 +163,10 @@
         if ($previewRevision) {
             cursorPosition = $previewRevision.content.length;
         } else {
-            cursorPosition = $currentPost.cursorPosition ?? 0
+            cursorPosition = $currentPost.post.cursorPosition ?? 0
+            console.log('Initial cursor position set to:', cursorPosition);
         }
-        
-        resizeContent();
-
-        if (contentTextarea) {
-            const pos = $currentPost.post.cursorPosition || $currentPost.revision.content.length;
-            requestAnimationFrame(() => {
-                contentTextarea.setSelectionRange(pos, pos);
-                scrollTextareaToCaret(contentTextarea);
-            });
-        }
+        requestAnimationFrame(restoreCursorPosition);
     });
 
     onDestroy(() => {
@@ -164,13 +198,15 @@
     {/if}
     
     <div class="editor-container" class:full={!previewVisible}>
-        <textarea
-        bind:this={contentTextarea}
-        bind:value={content}
-        placeholder={$currentPost.post.parentId ? "Write your response..." : "Start writing..."}
-        class="content-input"
-        autofocus
-        ></textarea>
+        <div
+          class="content-editor"
+          contenteditable="true"
+          on:input={() => nudgeIfNearBottom()}
+          bind:this={contentEditable}
+          bind:innerText={content}
+          on:blur={saveCursorPosition}
+          autofocus
+        ></div>
     </div>
     <div class="preview-container" class:hidden={!previewVisible}>
         <div class="content-preview" class:has-content={content.trim().length > 0}>
@@ -237,21 +273,29 @@
     }
 
     .content-input {
-        width: 100%;
-        min-height: 130px;
-        resize: none;
-        padding: 1.5rem;
-        border-color: #ddd;
-        border-radius: 25px;
-        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
-        font-family: var(--font-mono);
-        font-size: 1rem;
-        line-height: 1.9;
+        display: none;
     }
 
-    .content-input:focus {
-        outline: none;
-        box-shadow: 0 0 0 2px var(--color-accent);
+    .content-editor {
+      width: 100%;
+      max-width: calc(60ch + 4rem);
+      margin: 0 auto;
+      min-height: 130px;
+      padding: 2rem;
+      border: 1px solid #ddd;
+      border-radius: 25px;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      word-break: break-word;
+      outline: none;
+    }
+
+    .content-editor:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--color-accent);
     }
 
     @media (min-width: 768px) {

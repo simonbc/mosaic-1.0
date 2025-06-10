@@ -231,8 +231,7 @@ button:disabled {
 }
 /* Forms */
 input,
-select,
-textarea {
+select {
   font-family: inherit;
   font-size: 0.9rem;
   padding: 0.8rem 1.2rem;
@@ -417,6 +416,10 @@ pre {
     padding: 4rem 2rem;
     min-height: calc(100vh - 140px);
     align-items: center;
+  }
+
+  .post.editing {
+    padding: 1rem 2rem;
   }
 }
 

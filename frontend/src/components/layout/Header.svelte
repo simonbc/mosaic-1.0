@@ -1,6 +1,7 @@
 <script>
-    import { headerNav } from '@data/uiStore.js';
+    import { editing, headerNav } from '@data/uiStore.js';
 </script>
+
 
 <header class="app-header">
     <div class="logo">
