@@ -3,7 +3,7 @@
 </script>
 
 
-<header class="app-header">
+<header class="app-header" class:editing={$editing}>
     <div class="logo">
         <a href="/">mosaic</a>
     </div>

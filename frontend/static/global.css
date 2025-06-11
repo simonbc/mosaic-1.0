@@ -452,14 +452,15 @@ pre {
   background: linear-gradient(90deg, #065f46, #10b981, #d1fae5);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  display: inline-block;
-}
-
-.logo {
   display: flex;
   align-items: center;
   line-height: 1;
   padding-bottom: 6px;
+  transition: opacity 0.2s ease;
+}
+
+.app-header.editing .logo {
+  opacity: 0.3;
 }
 
 /* .footer a {
@@ -508,6 +509,11 @@ pre {
   font-size: 0.9rem;
   height: 70px;
   border-top: #ddd 1px solid;
+  transition: opacity 0.2s ease;
+}
+
+.footer.editing {
+  opacity: 0.3;
 }
 
 .footer a {
