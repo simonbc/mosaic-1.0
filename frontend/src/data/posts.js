@@ -148,6 +148,7 @@ export async function loadPost(slug) {
   const allPosts = get(posts)
   const post = allPosts[slug] ?? null
   if (!post) {
+    console.warn(`Post with slug "${slug}" not found.`)
     currentPost.set(null)
     return currentPost
   }

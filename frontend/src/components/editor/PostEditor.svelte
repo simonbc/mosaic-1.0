@@ -40,7 +40,6 @@
 
         const trimmedContent = normalizedContent.replace(/\n+$/, '');
         if (trimmedContent !== $currentPost.revision.content) {
-            console.log('Saving post content:', cursorPosition);
             await updatePost($currentPost.post.slug, { content: trimmedContent, cursorPosition });
 
             const { post, revision } = $currentPost
@@ -68,7 +67,6 @@
       preCaretRange.selectNodeContents(contentEditable);
       preCaretRange.setEnd(range.endContainer, range.endOffset);
       cursorPosition = preCaretRange.toString().length;
-      console.log('Saving cursor position:', cursorPosition);
     }
 
     function restoreCursorPosition() {
@@ -164,7 +162,6 @@
             cursorPosition = $previewRevision.content.length;
         } else {
             cursorPosition = $currentPost.post.cursorPosition ?? 0
-            console.log('Initial cursor position set to:', cursorPosition);
         }
         requestAnimationFrame(restoreCursorPosition);
     });

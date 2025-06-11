@@ -6,21 +6,21 @@ const DB_VERSION = 4
 const POSTS_STORE = 'posts'
 const REVISIONS_STORE = 'revisions'
 
-let dbPromise = null
+const dbPromise = openDB(DB_NAME, DB_VERSION, {
+  upgrade(db) {
+    if (!db.objectStoreNames.contains(POSTS_STORE)) {
+      db.createObjectStore(POSTS_STORE, { keyPath: 'slug' })
+    }
+    if (!db.objectStoreNames.contains(REVISIONS_STORE)) {
+      db.createObjectStore(REVISIONS_STORE, { keyPath: 'id' })
+    }
+  },
+  blocked() {
+    console.warn('Database upgrade blocked by another open tab.')
+  },
+})
 
 export async function getDb() {
-  if (!dbPromise) {
-    dbPromise = openDB(DB_NAME, DB_VERSION, {
-      upgrade(db) {
-        if (!db.objectStoreNames.contains(POSTS_STORE)) {
-          db.createObjectStore(POSTS_STORE)
-        }
-        if (!db.objectStoreNames.contains(REVISIONS_STORE)) {
-          db.createObjectStore(REVISIONS_STORE)
-        }
-      },
-    })
-  }
   return dbPromise
 }
 
@@ -45,7 +45,7 @@ export async function savePosts(posts) {
   for (const slug in posts) {
     const post = posts[slug]
     if (post?.slug != null) {
-      await store.put(post, post.slug)
+      await store.put(post)
     }
   }
   await tx.done
@@ -72,7 +72,7 @@ export async function saveRevisions(revisions) {
   for (const id in revisions) {
     const revision = revisions[id]
     if (revision?.id != null) {
-      await store.put(revision, revision.id)
+      await store.put(revision)
     }
   }
   await tx.done
