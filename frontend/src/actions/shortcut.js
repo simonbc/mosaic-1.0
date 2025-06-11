@@ -1,22 +1,34 @@
-export function shortcut(
-  node,
-  { key, meta = false, shift = false, alt = false, onPress }
-) {
-  function handler(e) {
-    const keyMatch = e.key.toLowerCase() === key.toLowerCase()
-    const metaMatch = meta ? e.metaKey || e.ctrlKey : !e.metaKey && !e.ctrlKey
-    const shiftMatch = e.shiftKey === shift
-    const altMatch = e.altKey === alt
+export function shortcut(node, shortcuts) {
+  if (!Array.isArray(shortcuts)) {
+    shortcuts = [shortcuts]
+  }
 
-    if (keyMatch && metaMatch && shiftMatch && altMatch) {
-      e.preventDefault()
-      onPress(e)
+  function handler(e) {
+    for (const {
+      key,
+      meta = false,
+      shift = false,
+      alt = false,
+      onPress,
+    } of shortcuts) {
+      const keyMatch = e.key.toLowerCase() === key.toLowerCase()
+      const metaMatch = meta ? e.metaKey || e.ctrlKey : true
+      const shiftMatch = e.shiftKey === shift
+      const altMatch = e.altKey === alt
+
+      if (keyMatch && metaMatch && shiftMatch && altMatch) {
+        e.preventDefault()
+        onPress(e)
+        break
+      }
     }
   }
-  window.addEventListener('keydown', handler)
+
+  document.addEventListener('keydown', handler, { capture: true })
+
   return {
     destroy() {
-      window.removeEventListener('keydown', handler)
+      document.removeEventListener('keydown', handler, { capture: true })
     },
   }
 }

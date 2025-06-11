@@ -27,8 +27,10 @@
 
 <div
     class="publish-button"
-    use:shortcut={{ key: 'Escape', onPress: () => toggleShowDialog() }}
-    use:shortcut={{ key: 'Enter', meta: true,  onPress: () => toggleShowDialog() }}
+    use:shortcut={[
+        { key: 'Escape', onPress: () => { if (!$currentPost?.post.published && $showPublishDialog) toggleShowDialog()}},
+        { key: 'Enter', meta: true,  onPress: () => { if (!$currentPost?.post.published && !$showPublishDialog) toggleShowDialog() }}
+    ]}
 >
     <PublishDialog
         bind:handle
