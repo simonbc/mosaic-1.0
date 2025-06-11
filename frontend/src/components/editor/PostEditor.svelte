@@ -145,6 +145,13 @@
         navigateTo($currentPost.post.slug, $currentPost.post.handle)
     }
 
+    // Only allow plain text on paste in the content editor
+    function handlePaste(event) {
+        event.preventDefault();
+        const text = (event.clipboardData || window.clipboardData).getData('text/plain');
+        document.execCommand('insertText', false, text);
+    }
+
     onMount(async () => {
         headerNav.set([
             { id: 'revisions', component: RevisionsButton, props: { toggleShowRevisions } },
@@ -213,6 +220,7 @@
           class="content-editor"
           contenteditable="true"
           on:input={() => nudgeIfNearBottom()}
+          on:paste={handlePaste}
           bind:this={contentEditable}
           bind:innerText={content}
           on:blur={saveCursorPosition}
