@@ -32,12 +32,14 @@
         { key: 'Enter', meta: true,  onPress: () => { if (!$currentPost?.post.published && !$showPublishDialog) toggleShowDialog() }}
     ]}
 >
-    <PublishDialog
-        bind:handle
-        bind:byline
-        onSubmit={() => handlePublish()}
-        show={showPublishDialog}
-    />
+    {#if $showPublishDialog}
+        <PublishDialog
+            bind:handle
+            bind:byline
+            onSubmit={() => handlePublish()}
+            show={showPublishDialog}
+        />
+    {/if}
     {#if !$currentPost?.post.published}
         <button class="btn btn-primary" class:cmd-visible={$cmdState.cmd} on:click={() => toggleShowDialog()}>
             <span class="btn-label">
