@@ -228,7 +228,7 @@
           data-placeholder="Start writing..."
         ></div>
     </div>
-    <div class="preview-container" class:hidden={!previewVisible}>
+    <div class="preview-container" class:hidden={!previewVisible} class:responding={$currentPost.parent}>
         <div class="content-preview" class:has-content={content.trim().length > 0}>
             {@html marked(content)}
         </div>
@@ -281,6 +281,10 @@
         }
     }
 
+    .preview-container.responding {
+        margin-top: 3rem;
+    }
+
     .preview-container.hidden {
         width: 0;
         opacity: 0;
@@ -298,7 +302,7 @@
 
     .content-editor {
       width: 100%;
-      max-width: calc(60ch + 4rem);
+      max-width: 640px;
       margin: 0 auto;
       min-height: 130px;
       padding: 2rem;
@@ -332,11 +336,13 @@
         font-weight: var(--font-post-content-weight);
         letter-spacing: var(--font-post-content-letter-spacing);
         line-height: var(--font-post-content-line-height);
+        width: 100%;
+        max-width: 640px;
+        margin: 0 auto;
     }
 
     .content-preview.has-content {
         min-height: 130px;
-        min-width: calc(50vw - 90px);
     }
 
     .content-input:focus {
@@ -405,6 +411,6 @@
 
     .post-parent {
         width: 100%;
-        max-width: calc(60ch + 4rem);
+        max-width: 640px;
     }
 </style>

@@ -5,6 +5,7 @@ const initial = {
   showRevisions: false,
   showButtons: true,
   handle: '',
+  byline: '',
 }
 
 const stored = localStorage.getItem('settings')

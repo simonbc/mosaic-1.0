@@ -27,12 +27,12 @@
 
   onMount(() => {
     console.log('PublishDialog mounted');
-  if (!handle) {
-    handleInput?.focus();
-  } else {
-    bylineInput?.focus();
-  }
-});
+    if (!handle) {
+      handleInput?.focus();
+    } else {
+      bylineInput?.focus();
+    }
+  });
 </script>
 
 <div

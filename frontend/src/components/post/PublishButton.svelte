@@ -15,12 +15,12 @@
     let byline = '';
 
     $: handle = $currentPost?.post.handle || $settings.handle
-    $: byline = $currentPost?.post.byline
+    $: byline = $currentPost?.post.byline || $settings.byline
 
     async function handlePublish() {
         const { post, revision } = $currentPost;
         await publishPost({ ...post, handle, byline }, revision)
-        await settings.update(s => ({ ...s, handle }))
+        await settings.update(s => ({ ...s, handle, byline }))
         navigateTo(post.slug, handle)
     }
 </script>
