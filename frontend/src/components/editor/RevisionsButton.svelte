@@ -21,7 +21,7 @@
     });
 </script>
 
-{#if $currentPost.revisions.length > 1}
+{#if $currentPost?.revisions.length > 1}
     <div class="revisions-container">
         <button
           class="btn btn-secondary"

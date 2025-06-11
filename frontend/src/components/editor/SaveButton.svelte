@@ -9,7 +9,7 @@
 
 <button class="btn btn-primary" class:cmd-visible={$cmdState.cmd} on:click={() => toggleEditing()}>
   <span class="btn-label">
-    {#if $currentPost.post.published}
+    {#if $currentPost?.post.published}
       Publish
     {:else}
       Save draft

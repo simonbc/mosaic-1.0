@@ -5,26 +5,34 @@ import {
   signHandle,
   exportPublicKeyHex,
 } from '@utils/crypto.js'
-import { loadPosts, savePosts, loadRevisions, saveRevisions } from './db.js'
+import {
+  loadPosts,
+  savePosts,
+  loadRevisions,
+  saveRevisions,
+  getDb,
+} from './db.js'
 import { apiFetch } from '@utils/fetch.js'
 
 export const currentPost = writable(undefined)
 export const posts = writable(undefined)
 export const revisions = writable(undefined)
 
-// load posts from IndexedDB
-loadPosts().then((savedPosts) => {
-  posts.set(savedPosts ?? {})
+const dbReady = getDb()
+
+dbReady.then(() => {
+  loadPosts().then((savedPosts) => {
+    posts.set(savedPosts ?? {})
+  })
+
+  loadRevisions().then((savedRevisions) => {
+    revisions.set(savedRevisions ?? {})
+  })
 })
 
 // persist posts to IndexedDB on any change
 posts.subscribe((currentPosts) => {
   savePosts(currentPosts)
-})
-
-// load revisions from IndexedDB
-loadRevisions().then((savedRevisions) => {
-  revisions.set(savedRevisions ?? {})
 })
 
 // persist revisions to IndexedDB on any change

@@ -2,6 +2,7 @@
     import { onMount } from 'svelte';
     import { marked } from 'marked';
 
+    import { API_BASE } from '../../env.js'
     import PublishStatus from './PublishStatus.svelte';
     import EditButton from './EditButton.svelte';
     import PublishButton from './PublishButton.svelte';
@@ -24,7 +25,7 @@
       {#if $currentPost.parent}
         <a
           class="post-parent-link"
-          href="/@{$currentPost.parent.handle}/{$currentPost.parent.slug}"
+          href="{API_BASE}/@{$currentPost.parent.handle}/{$currentPost.parent.slug}"
         >
           responding to
           <span class="post-parent-handle"

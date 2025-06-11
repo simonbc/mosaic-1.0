@@ -6,17 +6,22 @@ const DB_VERSION = 4
 const POSTS_STORE = 'posts'
 const REVISIONS_STORE = 'revisions'
 
+let dbPromise = null
+
 export async function getDb() {
-  return openDB(DB_NAME, DB_VERSION, {
-    upgrade(db) {
-      if (!db.objectStoreNames.contains(POSTS_STORE)) {
-        db.createObjectStore(POSTS_STORE)
-      }
-      if (!db.objectStoreNames.contains(REVISIONS_STORE)) {
-        db.createObjectStore(REVISIONS_STORE)
-      }
-    },
-  })
+  if (!dbPromise) {
+    dbPromise = openDB(DB_NAME, DB_VERSION, {
+      upgrade(db) {
+        if (!db.objectStoreNames.contains(POSTS_STORE)) {
+          db.createObjectStore(POSTS_STORE)
+        }
+        if (!db.objectStoreNames.contains(REVISIONS_STORE)) {
+          db.createObjectStore(REVISIONS_STORE)
+        }
+      },
+    })
+  }
+  return dbPromise
 }
 
 // ---- Posts ----
