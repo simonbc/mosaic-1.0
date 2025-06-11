@@ -7,6 +7,9 @@
 
   let handleError = '';
 
+  let handleInput;
+  let bylineInput;
+
   function handleSubmit() {
     if (!handle) {
       handleError = 'Required';
@@ -17,6 +20,15 @@
 
     onSubmit()
     showPublishDialog.set(false)
+  }
+
+  // Move focus logic to reactive statement when dialog becomes visible
+  $: if ($showPublishDialog) {
+    if (!handle) {
+      handleInput?.focus();
+    } else {
+      bylineInput?.focus();
+    }
   }
 </script>
 
@@ -37,11 +49,13 @@
         <div class="handle-input-wrapper">
           <span class="handle-prefix">@</span>
           <input
+            bind:this={handleInput}
             type="text"
             bind:value={handle}
             on:input={() => handle = handle.toLowerCase()}
             class="handle-input"
             placeholder="pick a handle"
+            tabindex="1"
           />
         </div>
       </label>
@@ -51,25 +65,27 @@
 
       <h3 class="publish-title">Add a byline to your post</h3>
       <label class="label">
-        
         <input
           class="byline-input"
+          bind:this={bylineInput}
           bind:value={byline}
           placeholder="Anonymous or your name"
+          tabindex="2"
         />
         <small class="byline-note">Optional — leave blank to publish anonymously.</small>
       </label>
 
       <div class="actions">
         <button
-        type="button"
-        class="btn"
-        aria-label="Close dialog"
-        on:click={() => showPublishDialog.set(false)}
+          type="button"
+          class="btn"
+          aria-label="Close dialog"
+          on:click={() => showPublishDialog.set(false)}
+          tabindex="4"
         >
-        Close
-      </button>
-      <button class="btn btn-primary" on:click={handleSubmit}>Publish</button>
+          Close
+        </button>
+        <button class="btn btn-primary" on:click={handleSubmit} tabindex="3">Publish</button>
       </div>
     </div>
     <button

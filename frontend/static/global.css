@@ -125,6 +125,11 @@ a:hover {
   outline: 0;
 }
 
+.btn:focus {
+  outline: 2px solid #ddd;
+  outline-offset: 2px;
+}
+
 .btn:hover {
   background: #3c3c3c;
   color: #fff;
