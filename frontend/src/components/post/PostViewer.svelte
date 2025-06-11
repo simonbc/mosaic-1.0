@@ -27,7 +27,7 @@
           class="post-parent-link"
           href="{API_BASE}/@{$currentPost.parent.handle}/{$currentPost.parent.slug}"
         >
-          responding to
+          ← responding to
           <span class="post-parent-handle"
             >@{$currentPost.parent.handle}</span
           >

@@ -2,6 +2,7 @@
     import { onMount, onDestroy } from 'svelte'
     import { marked } from 'marked'
 
+    import { API_BASE } from '../../env.js'
     import RevisionsButton from './RevisionsButton.svelte';
     import PreviewButton from './PreviewButton.svelte';
     import SaveButton from './SaveButton.svelte';
@@ -195,6 +196,19 @@
     {/if}
     
     <div class="editor-container" class:full={!previewVisible}>
+        {#if $currentPost.parent}
+            <div class="post-parent">
+                <a
+                class="post-parent-link"
+                href="{API_BASE}/@{$currentPost.parent.handle}/{$currentPost.parent.slug}"
+                >
+                    ← responding to
+                    <span class="post-parent-handle"
+                        >@{$currentPost.parent.handle}</span
+                    >
+                </a>
+            </div>
+        {/if}
         <div
           class="content-editor"
           contenteditable="true"
@@ -203,6 +217,7 @@
           bind:innerText={content}
           on:blur={saveCursorPosition}
           autofocus
+          data-placeholder="Start writing..."
         ></div>
     </div>
     <div class="preview-container" class:hidden={!previewVisible}>
@@ -372,5 +387,16 @@
     .revision-banner .btn-link:hover {
         text-decoration-thickness: 2px;
         color: #3c3c3c;
+    }
+
+    .content-editor:empty::before {
+        content: attr(data-placeholder);
+        color: #aaa;
+        pointer-events: none;
+    }
+
+    .post-parent {
+        width: 100%;
+        max-width: calc(60ch + 4rem);
     }
 </style>
