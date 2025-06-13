@@ -1,4 +1,5 @@
 import { get, writable } from 'svelte/store'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   getOrCreateKeyPair,
@@ -13,6 +14,14 @@ import {
   getDb,
 } from './db.js'
 import { apiFetch } from '@utils/fetch.js'
+
+function generateSlug() {
+  const array = new Uint32Array(2)
+  crypto.getRandomValues(array)
+  // Create a 13-15 digit number
+  const randomNumber = (BigInt(array[0]) << 32n) + BigInt(array[1])
+  return randomNumber.toString()
+}
 
 export const currentPost = writable(undefined)
 export const posts = writable(undefined)
@@ -47,17 +56,22 @@ export function createPost({
   slug = null,
 }) {
   if (!slug) {
-    slug = crypto.randomUUID()
+    slug = generateSlug()
   }
 
   const revisionId = crypto.randomUUID()
   const timestamp = Date.now()
 
   const post = {
+    id: uuidv4(), // Assign internal UUID here
     slug,
+    publicId: null,
     cursorPosition,
     published: false,
     parentId,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    latestRevisionId: revisionId,
   }
 
   const revision = {
@@ -70,7 +84,7 @@ export function createPost({
     [revisionId]: {
       ...revision,
       id: revisionId,
-      postId: slug,
+      postId: post.id,
       createdAt: timestamp,
       updatedAt: timestamp,
     },
@@ -78,16 +92,10 @@ export function createPost({
 
   posts.update((current) => ({
     ...current,
-    [slug]: {
-      ...post,
-      id: null,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-      latestRevisionId: revisionId,
-    },
+    [post.id]: post,
   }))
 
-  return slug
+  return post
 }
 
 export function updatePost(postId, { content, cursorPosition }) {
@@ -97,7 +105,7 @@ export function updatePost(postId, { content, cursorPosition }) {
   const currentPosts = get(posts)
 
   if (!currentPosts[postId]) {
-    throw new Error(`Post with slug ${postId} not found.`)
+    throw new Error(`Post with id ${postId} not found.`)
   }
 
   revisions.update((current) => ({
@@ -146,7 +154,7 @@ export async function loadPost(slug) {
   await Promise.all([waitFor(posts), waitFor(revisions)])
 
   const allPosts = get(posts)
-  const post = allPosts[slug] ?? null
+  const post = Object.values(allPosts).find((p) => p.slug === slug) ?? null
   if (!post) {
     console.warn(`Post with slug "${slug}" not found.`)
     currentPost.set(null)
@@ -160,7 +168,7 @@ export async function loadPost(slug) {
     return currentPost
   }
 
-  const { responses = [] } = post.id ? await fetchPost(post.id) : {}
+  const { responses = [] } = post.publicId ? await fetchPost(post.publicId) : {}
   const parent = post.parentId ? await fetchPost(post.parentId) : null
 
   currentPost.set({
@@ -168,7 +176,7 @@ export async function loadPost(slug) {
     revision,
     parent,
     revisions: Object.values(allRevisions)
-      .filter((r) => r.postId === post.slug)
+      .filter((r) => r.postId === post.id)
       .sort((a, b) => b.createdAt - a.createdAt),
     responses,
   })
@@ -241,9 +249,9 @@ export async function publishPost(post, revision) {
 
     posts.update((current) => ({
       ...current,
-      [post.slug]: {
-        ...current[post.slug],
-        id,
+      [post.id]: {
+        ...current[post.id],
+        publicId: id,
         handle: post.handle,
         byline: post.byline,
         published: true,

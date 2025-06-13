@@ -21,7 +21,8 @@
     "vite-plugin-static-copy": "^3.0.0"
   },
   "dependencies": {
-    "marked": "^15.0.9"
+    "marked": "^15.0.9",
+    "uuid": "^11.1.0"
   },
   "sideEffects": [
     "./src/respond-entry.js",

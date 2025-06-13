@@ -17,7 +17,7 @@
     }
     
     function handleCreatePost() {
-        const slug = createPost({ content })
+        const { slug } = createPost({ content })
         navigateTo(slug)
     }
 

@@ -9,15 +9,14 @@ export function updateRoute() {
   let path = window.location.pathname.slice(1) // remove leading slash
   const segments = path.split('/')
 
-  // editing.set(false)
-  // responding.set(false)
-
   let handle
   let slug = ''
-  if (segments.length === 1) {
-    // /{slug}
-    slug = segments[0]
-  } else {
+
+  if (segments.length === 2 && segments[0] === 'draft') {
+    // /draft/{slug}
+    slug = segments[1]
+  } else if (segments.length >= 2) {
+    // /@handle/{slug}
     handle = segments[0].slice(1) // remove leading @
     slug = segments[1]
 
@@ -36,9 +35,11 @@ export function updateRoute() {
 }
 
 export function navigateTo(slug, handle = null) {
-  let path = encodeURIComponent(slug)
+  let path
   if (handle) {
-    path = `@${encodeURIComponent(handle)}/${path}`
+    path = `@${encodeURIComponent(handle)}/${encodeURIComponent(slug)}`
+  } else {
+    path = `draft/${encodeURIComponent(slug)}`
   }
   history.pushState({}, '', `/${path}`)
   updateRoute()

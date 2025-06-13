@@ -41,7 +41,7 @@
 
         const trimmedContent = normalizedContent.replace(/\n+$/, '');
         if (trimmedContent !== $currentPost.revision.content) {
-            await updatePost($currentPost.post.slug, { content: trimmedContent, cursorPosition });
+            await updatePost($currentPost.post.id, { content: trimmedContent, cursorPosition });
 
             const { post, revision } = $currentPost
             if ($currentPost.post.published) {
@@ -128,7 +128,7 @@
         if (!$previewRevision || !$currentPost) return;
 
         await updatePost(
-            $currentPost.post.slug, 
+            $currentPost.post.id,
             {
                 content: $previewRevision.content, // Restore old content
                 cursorPosition: $previewRevision.content.length, // Set cursor to end of restored content
@@ -141,8 +141,8 @@
 
     function onSave() {
         toggleShowRevisions(false);
-        savePost()
-        navigateTo($currentPost.post.slug, $currentPost.post.handle)
+        savePost();
+        navigateTo($currentPost.post.slug, $currentPost.post.handle);
     }
 
     // Only allow plain text on paste in the content editor
@@ -159,17 +159,17 @@
             { id: 'save', component: SaveButton, props: { onSave } },
         ]);
         if ($responding && $currentSlug) {
-            const post = await fetchPublicPost($currentHandle, $currentSlug)
+            const post = await fetchPublicPost($currentHandle, $currentSlug);
             const newSlug = await createPost({ parentId: post.id });
-            await loadPost(newSlug)
-            editing.set(true)
-            responding.set(false)
+            await loadPost(newSlug);
+            editing.set(true);
+            responding.set(false);
         }
 
         if ($previewRevision) {
             cursorPosition = $previewRevision.content.length;
         } else {
-            cursorPosition = $currentPost.post.cursorPosition ?? 0
+            cursorPosition = $currentPost.post.cursorPosition ?? 0;
         }
         requestAnimationFrame(restoreCursorPosition);
     });
