@@ -1,7 +1,7 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'mosaic-demo'
+app = 'mosaic-prod'
 primary_region = 'fra'
 
 [build]
@@ -25,5 +25,5 @@ primary_region = 'fra'
 
 [env]
   FLY_ENV = "production"
-  VITE_API_BASE = "https://mosaic-demo.fly.dev"
-  FRONTEND_ORIGIN = "https://mosaic-demo.fly.dev"
+  VITE_API_BASE = "https://mosaic-prod.fly.dev"
+  FRONTEND_ORIGIN = "https://mosaic-prod.fly.dev"
