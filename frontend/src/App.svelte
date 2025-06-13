@@ -5,7 +5,6 @@
     import Footer from './components/layout/Footer.svelte'
     import Home from './components/Home.svelte'
     import Post from './components/post/Post.svelte'
-    import Sidebar from './components/layout/Sidebar.svelte'
 
     import { currentSlug, startRouting, stopRouting} from './routing.js'
     import { loadPost  } from '@data/posts.js'
@@ -36,7 +35,6 @@
                 <Home />
             {/if}
         </div>
-        <Sidebar />
     </div>
     <Footer />
 </div>
