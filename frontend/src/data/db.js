@@ -87,15 +87,20 @@ export async function savePosts(posts) {
   const store = tx.store
   for (const id in posts) {
     const post = posts[id]
+
     if (!post.id) {
       post.id = uuidv4()
     }
-    if (!post.slug) {
+
+    if (
+      !post.slug ||
+      typeof post.slug !== 'string' ||
+      post.slug.trim() === ''
+    ) {
       post.slug = generateSlug()
     }
-    if (post?.id != null) {
-      await store.put(post)
-    }
+
+    await store.put(post)
   }
   await tx.done
 }
@@ -120,7 +125,7 @@ export async function saveRevisions(revisions) {
   const store = tx.store
   for (const id in revisions) {
     const revision = revisions[id]
-    if (revision?.id != null) {
+    if (revision && revision.id) {
       await store.put(revision)
     }
   }
