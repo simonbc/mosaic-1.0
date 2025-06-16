@@ -649,7 +649,5 @@ pre {
 .post-response-meta {
   font-size: 0.9rem;
   color: var(--color-muted);
-  margin-bottom: 2rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--color-border);
 }
