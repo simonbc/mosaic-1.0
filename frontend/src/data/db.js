@@ -42,9 +42,7 @@ const dbPromise = openDB(DB_NAME, DB_VERSION, {
           if (!post.id) {
             post.id = uuidv4()
           }
-          if (!('publicId' in post)) {
-            post.publicId = null
-          }
+
           // Use the IDBObjectStore of the upgrade transaction
           newStore.put(post)
         }
@@ -94,9 +92,6 @@ export async function savePosts(posts) {
     }
     if (!post.slug) {
       post.slug = generateSlug()
-    }
-    if (!('publicId' in post)) {
-      post.publicId = null
     }
     if (post?.id != null) {
       await store.put(post)

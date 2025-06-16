@@ -241,7 +241,6 @@ export async function publishPost(post, revision) {
       ...current,
       [post.id]: {
         ...current[post.id],
-        publicId: id,
         handle: post.handle,
         byline: post.byline,
         published: true,
