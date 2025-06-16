@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store'
 
-import { editing, responding } from '@data/uiStore'
+import { editing } from '@data/uiStore'
 
 export const currentHandle = writable('')
 export const currentSlug = writable('')
@@ -22,9 +22,6 @@ export function updateRoute() {
 
     if (segments.length === 3) {
       if (segments[2] === 'edit') {
-        editing.set(true)
-      } else if (segments[2] === 'respond') {
-        responding.set(true)
         editing.set(true)
       }
     }

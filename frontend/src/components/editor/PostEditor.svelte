@@ -10,7 +10,7 @@
     import { navigateTo, currentHandle, currentSlug } from '../../routing.js'
     import { currentPost, createPost, updatePost, loadPost, fetchPublicPost, publishPost } from '@data/posts.js'
     import { settings } from '@data/settingsStore.js'
-    import { previewRevision, editing, responding, headerNav } from '@data/uiStore.js'
+    import { previewRevision, editing, headerNav } from '@data/uiStore.js'
     import { shortcut } from '@actions/shortcut.js'
 
     let contentEditable;
@@ -46,11 +46,6 @@
             const { post, revision } = $currentPost
             if ($currentPost.post.published) {
                 publishPost(post, { ...revision, content: trimmedContent })
-                navigateTo(post.slug, post.handle)
-            }
-
-            if ($responding) {
-                responding.set(false)
                 navigateTo(post.slug, post.handle)
             }
 
@@ -158,13 +153,6 @@
             { id: 'preview', component: PreviewButton, props: { togglePreview } },
             { id: 'save', component: SaveButton, props: { onSave } },
         ]);
-        if ($responding && $currentSlug) {
-            const post = await fetchPublicPost($currentHandle, $currentSlug);
-            const newPost = await createPost({ parentId: post.id });
-            await loadPost(newPost.slug);
-            editing.set(true);
-            responding.set(false);
-        }
 
         if ($previewRevision) {
             cursorPosition = $previewRevision.content.length;
@@ -179,7 +167,6 @@
     })
 </script>
 
-{#if !$responding}
 <main
   class="split-container"
   use:shortcut={{ key: 'p', meta: true, onPress: togglePreview }}
@@ -203,19 +190,6 @@
     {/if}
     
     <div class="editor-container" class:full={!previewVisible}>
-        {#if $currentPost.parent}
-            <div class="post-parent">
-                <a
-                class="post-parent-link"
-                href="{API_BASE}/@{$currentPost.parent.handle}/{$currentPost.parent.slug}"
-                >
-                    ← responding to
-                    <span class="post-parent-handle"
-                        >@{$currentPost.parent.handle}</span
-                    >
-                </a>
-            </div>
-        {/if}
         <div
           class="content-editor"
           contenteditable="true"
@@ -228,13 +202,13 @@
           data-placeholder="Start writing..."
         ></div>
     </div>
-    <div class="preview-container" class:hidden={!previewVisible} class:responding={$currentPost.parent}>
+    <div class="preview-container" class:hidden={!previewVisible}>
         <div class="content-preview" class:has-content={content.trim().length > 0}>
             {@html marked(content)}
         </div>
     </div>
 </main>
-{/if}
+
 <style>
     .split-container {
         padding: 1rem 0;    
@@ -279,10 +253,6 @@
         .preview-container {
             display: block;
         }
-    }
-
-    .preview-container.responding {
-        margin-top: 3rem;
     }
 
     .preview-container.hidden {
@@ -407,10 +377,5 @@
         content: attr(data-placeholder);
         color: #aaa;
         pointer-events: none;
-    }
-
-    .post-parent {
-        width: 100%;
-        max-width: 640px;
     }
 </style>

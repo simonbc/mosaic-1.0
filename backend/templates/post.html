@@ -19,20 +19,6 @@
             <section class="post-section">
               <div>
                 <div class="post-content">
-                  {% if post.parent_id %}
-                  <div class="post-response-meta">
-                    <a
-                      class="post-parent-link"
-                      href="/@{{ post.parent.handle }}/{{ post.parent.slug }}"
-                    >
-                      ← responding to
-                      <span class="post-parent-handle"
-                        >@{{ post.parent.handle }}</span
-                      >
-                    </a>
-                  </div>
-                  {% endif %}
-
                   <div>{{ post.revision.content | markdown | safe }}</div>
 
                   <div class="post-meta">
@@ -46,39 +32,6 @@
                     </div>
                   </div>
                 </div>
-                <div class="post-respond">
-                  <a
-                    class="btn btn-link btn-sm"
-                    href="{{ spa_base }}/@{{ post.handle }}/{{ post.slug }}/respond"
-                    >Respond</a
-                  >
-                </div>
-                {% if post.responses | length %}
-                <div class="post-responses-container">
-                  {% for response in post.responses %}
-                  <div class="post-response-wrapper">
-                    <div class="post-content">
-                      <a
-                        href="/@{{ response.handle }}/{{ response.slug }}"
-                        class="post-response-link"
-                      >
-                        {{ response.content | markdown | safe }}
-                      </a>
-                      <div class="post-meta">
-                        <div>
-                          by
-                          <a href="#"
-                            >{{ response.byline if response.byline else '@' +
-                            response.handle }}</a
-                          >
-                          · {{ response.updated_at | datetimeformat }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {% endfor %}
-                </div>
-                {% endif %}
               </div>
             </section>
           </article>

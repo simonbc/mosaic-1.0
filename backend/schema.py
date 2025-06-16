@@ -10,4 +10,3 @@ class PublishRequest(BaseModel):
     public_key: str
     signature: str
     byline: Optional[str] = None
-    parent_id: Optional[int] = None

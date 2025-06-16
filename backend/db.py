@@ -36,8 +36,7 @@ CREATE TABLE IF NOT EXISTS posts (
     slug TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    byline TEXT,
-    parent_id INTEGER
+    byline TEXT
 )
 """)
 
@@ -67,13 +66,12 @@ def save_post(handle: str, slug: str, post: PublishRequest):
     else:
         cursor.execute("""
         INSERT INTO posts (
-            handle, slug, byline, parent_id
-        ) VALUES (?, ?, ?, ?)
+            handle, slug, byline
+        ) VALUES (?, ?, ?)
         """, (
             handle,
             slug,
-            post.byline,
-            post.parent_id
+            post.byline
         ))
         post_id = cursor.lastrowid
         conn.commit()
@@ -99,7 +97,7 @@ def save_post(handle: str, slug: str, post: PublishRequest):
 def get_post(id: int):
     cursor.execute("""
     SELECT
-        p.id, p.handle, p.slug, p.created_at, p.updated_at, p.byline, p.parent_id,
+        p.id, p.handle, p.slug, p.created_at, p.updated_at, p.byline,
         r.id, r.content, r.created_at
     FROM posts p
     JOIN revisions r ON r.post_id = p.id
@@ -112,23 +110,20 @@ def get_post(id: int):
     """, (id,))
     row = cursor.fetchone()
     if row:
-        post = {
+        return {
             "id": row[0],
             "handle": row[1],
             "slug": row[2],
             "created_at": row[3],
             "updated_at": row[4],
             "byline": row[5],
-            "parent_id": row[6],
             "revision": {
-                "id": row[7],
-                "content": row[8],
-                "created_at": row[9]
+                "id": row[6],
+                "content": row[7],
+                "created_at": row[8]
             },
         }
-
-        post["responses"] = get_responses(post["id"])
-        return post
+    
     return None
 
 def save_revision(revision):
@@ -145,9 +140,8 @@ def save_revision(revision):
 def get_post_by_slug(handle: str, slug: str):
     cursor.execute("""
         SELECT
-            p.id, p.handle, p.slug, p.created_at, p.updated_at, p.byline, p.parent_id,
-            r.id, r.content, r.created_at,
-            parent.handle, parent.slug
+            p.id, p.handle, p.slug, p.created_at, p.updated_at, p.byline,
+            r.id, r.content, r.created_at
         FROM posts p
         JOIN revisions r ON r.id = (
             SELECT id FROM revisions
@@ -155,64 +149,26 @@ def get_post_by_slug(handle: str, slug: str):
             ORDER BY id DESC
             LIMIT 1
         )
-        LEFT JOIN posts parent ON parent.id = p.parent_id
         WHERE LOWER(p.handle) = LOWER(?)
         AND LOWER(p.slug) = LOWER(?)
     """, (handle, slug,))
     row = cursor.fetchone()
     if row:
-        post = {
+        return {
             "id": row[0],
             "handle": row[1],
             "slug": row[2],
             "created_at": row[3],
             "updated_at": row[4],
             "byline": row[5],
-            "parent_id": row[6],
             "revision": {
-                "id": row[7],
-                "content": row[8],
-                "created_at": row[9]
-            },
-            "parent": {
-                "handle": row[10],
-                "slug": row[11]
+                "id": row[6],
+                "content": row[7],
+                "created_at": row[8]
             }
         }
 
-        post["responses"] = get_responses(post["id"])
-        return post
     return None
-
-def get_responses(post_id: int):
-    # Fetch responses
-    cursor.execute("""
-        SELECT
-            p.id, p.handle, p.slug, p.byline,
-            r.content, r.created_at, r.updated_at
-        FROM posts p
-        JOIN revisions r ON r.id = (
-            SELECT id FROM revisions
-            WHERE post_id = p.id
-            ORDER BY id DESC
-            LIMIT 1
-        )
-        WHERE p.parent_id = ?
-        ORDER BY r.created_at DESC
-    """, (post_id,))
-    children = cursor.fetchall()
-    return [
-        {
-            "id": c[0],
-            "handle": c[1],
-            "slug": c[2],
-            "byline": c[3],
-            "content": c[4],
-            "created_at": c[5],
-            "updated_at": c[6]
-        } for c in children
-    ]
-    return
 
 def verify_or_register_handle(handle, public_key, signature):
     message = handle.encode('utf-8')

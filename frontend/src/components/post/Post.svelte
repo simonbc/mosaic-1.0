@@ -6,7 +6,7 @@
     import { currentPost } from '@data/posts.js'
     import { currentSlug } from '../../routing.js'
     import { shortcut } from '../../actions/shortcut.js'
-    import { editing, responding } from '@data/uiStore.js'
+    import { editing } from '@data/uiStore.js'
 
     function toggleEditing() {
         editing.update((e) => !e)
@@ -15,7 +15,7 @@
 
 {#if $currentPost !== undefined}
     <article class="post" class:editing={$editing}>
-        {#if $currentPost || ($responding && $currentSlug)}
+        {#if $currentPost}
             <div class="post-shortcuts" use:shortcut={{ key: 'e', meta: true, onPress: () => toggleEditing() }}>
                 {#if $editing}
                     <PostEditor />

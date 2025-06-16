@@ -51,7 +51,6 @@ revisions.subscribe((currentRevisions) => {
 
 export function createPost({
   content = '',
-  parentId = null,
   cursorPosition = null,
   slug = null,
 }) {
@@ -68,7 +67,6 @@ export function createPost({
     publicId: null,
     cursorPosition,
     published: false,
-    parentId,
     createdAt: timestamp,
     updatedAt: timestamp,
     latestRevisionId: revisionId,
@@ -115,7 +113,6 @@ export function updatePost(postId, { content, cursorPosition }) {
       postId,
       content,
       createdAt: timestamp,
-      parentRevisionId: currentPosts[postId]?.latestRevisionId,
     },
   }))
 
@@ -167,18 +164,12 @@ export async function loadPost(slug) {
     currentPost.set(null)
     return currentPost
   }
-
-  const { responses = [] } = post.publicId ? await fetchPost(post.publicId) : {}
-  const parent = post.parentId ? await fetchPost(post.parentId) : null
-
   currentPost.set({
     post,
     revision,
-    parent,
     revisions: Object.values(allRevisions)
       .filter((r) => r.postId === post.id)
       .sort((a, b) => b.createdAt - a.createdAt),
-    responses,
   })
 
   return currentPost
@@ -235,7 +226,6 @@ export async function publishPost(post, revision) {
     created_at: post.createdAt,
     updated_at: Date.now(),
     byline: post.byline,
-    parent_id: post.parentId,
     signature,
     public_key: publicHex,
   })

@@ -22,48 +22,11 @@
 
 <section class="post-section">
     <div class="post-content">
-      {#if $currentPost.parent}
-        <a
-          class="post-parent-link"
-          href="{API_BASE}/@{$currentPost.parent.handle}/{$currentPost.parent.slug}"
-        >
-          ← responding to
-          <span class="post-parent-handle"
-            >@{$currentPost.parent.handle}</span
-          >
-        </a>
-        {/if}
-        {@html marked.parse(
+      {@html marked.parse(
             $previewRevision 
                 ? $previewRevision.content
                 : $currentPost.revision.content
       )}
       <PostMeta post={$currentPost.post} />
-      {#if $currentPost.post.published}
-        <div class="post-respond">
-          <a
-            class="btn btn-link btn-sm"
-            href="/@{$currentPost.post.handle}/{$currentPost.post.slug}/respond"
-            >Respond</a
-          >
-        </div>
-      {/if}
-      {#if $currentPost.responses}
-        <div class="post-responses-container">
-          {#each $currentPost.responses as response}
-            <div class="post-response-wrapper">
-              <div class="post-content">
-                <a
-                  href="/@{response.handle}/{response.slug}"
-                  class="post-response-link"
-                >
-                  {response.content}
-                </a>
-                <PostMeta post={{ ... response, updatedAt: response.updated_at}} />
-              </div>
-            </div>
-          {/each}
-        </div>
-        {/if}
     </div>
 </section>
