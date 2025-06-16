@@ -1,16 +1,23 @@
 <script>
+    import { onMount } from 'svelte'
     import PostEditor from '../editor/PostEditor.svelte'
     import PostViewer from './PostViewer.svelte'
     import NotFound from '../NotFound.svelte'
+    import ExportMenu from '../ExportMenu.svelte'
 
     import { currentPost } from '@data/posts.js'
-    import { currentSlug } from '../../routing.js'
     import { shortcut } from '../../actions/shortcut.js'
-    import { editing } from '@data/uiStore.js'
+    import { editing, footerNav } from '@data/uiStore.js'
 
     function toggleEditing() {
         editing.update((e) => !e)
     }
+
+    onMount(() => {
+        footerNav.set([
+            { id: 'export', component: ExportMenu },
+        ])
+    })
 </script>
 
 {#if $currentPost !== undefined}

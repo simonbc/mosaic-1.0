@@ -23,18 +23,20 @@
     })
 </script>
 
-<div class="app-main" role="main">
-    {#if $currentSlug}
-        <Header />
-    {/if}
-    <div class="app-container" class:editing={$editing}>
-        <div class="app-content">   
-            {#if $currentSlug}
-                <Post />
-            {:else}
-                <Home />
-            {/if}
+{#if $currentSlug !== undefined}
+    <div class="app-main" role="main">
+        {#if $currentSlug}
+            <Header />
+        {/if}
+        <div class="app-container" class:editing={$editing}>
+            <div class="app-content">
+                {#if $currentSlug}
+                    <Post />
+                {:else}
+                    <Home />
+                {/if}
+            </div>
         </div>
+        <Footer />
     </div>
-    <Footer />
-</div>
+{/if}

@@ -2,8 +2,8 @@ import { writable } from 'svelte/store'
 
 import { editing } from '@data/uiStore'
 
-export const currentHandle = writable('')
-export const currentSlug = writable('')
+export const currentHandle = writable(undefined)
+export const currentSlug = writable(undefined)
 
 export function updateRoute() {
   let path = window.location.pathname.slice(1) // remove leading slash
