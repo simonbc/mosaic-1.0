@@ -93,8 +93,9 @@
     </div>
     <script type="module">
       const DB_NAME = 'mosaic'
-      const DB_VERSION = 4
+      const DB_VERSION = 5
       const slug = '{{ post.slug }}'
+      const id = '{{ post.id }}'
 
       async function checkAndRedirect() {
         try {
@@ -114,14 +115,14 @@
 
           const tx = db.transaction('posts', 'readonly')
           const store = tx.objectStore('posts')
-          const getRequest = store.get(slug)
+          const getRequest = store.get(id)
 
           getRequest.onsuccess = (event) => {
             const post = event.target.result
             if (post) {
               const header = document.querySelector('.app-header')
               const editButton = document.createElement('a')
-              editButton.href = `/@${post.handle}/${post.slug}/edit`
+              editButton.href = `/draft/${post.slug}/edit`
               editButton.textContent = 'Edit'
               editButton.className = 'btn btn-secondary'
               header.appendChild(editButton)

@@ -26,7 +26,6 @@
 
 
   onMount(() => {
-    console.log('PublishDialog mounted');
     if (!handle) {
       handleInput?.focus();
     } else {

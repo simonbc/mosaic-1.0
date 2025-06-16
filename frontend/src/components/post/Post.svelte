@@ -1,6 +1,5 @@
 <script>
     import PostEditor from '../editor/PostEditor.svelte'
-    import Editor from '../editor/Editor.svelte'
     import PostViewer from './PostViewer.svelte'
     import NotFound from '../NotFound.svelte'
 
@@ -16,11 +15,10 @@
 
 {#if $currentPost !== undefined}
     <article class="post" class:editing={$editing}>
-        {#if $currentPost || $responding && $currentSlug}
+        {#if $currentPost || ($responding && $currentSlug)}
             <div class="post-shortcuts" use:shortcut={{ key: 'e', meta: true, onPress: () => toggleEditing() }}>
                 {#if $editing}
                     <PostEditor />
-  <!-- <Editor />                    -->
                 {:else}
                     <PostViewer />
                 {/if}

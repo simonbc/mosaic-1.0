@@ -160,8 +160,8 @@
         ]);
         if ($responding && $currentSlug) {
             const post = await fetchPublicPost($currentHandle, $currentSlug);
-            const newSlug = await createPost({ parentId: post.id });
-            await loadPost(newSlug);
+            const newPost = await createPost({ parentId: post.id });
+            await loadPost(newPost.slug);
             editing.set(true);
             responding.set(false);
         }
