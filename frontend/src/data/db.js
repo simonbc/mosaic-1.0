@@ -131,3 +131,12 @@ export async function saveRevisions(revisions) {
   }
   await tx.done
 }
+
+export async function exportData() {
+  const posts = await loadPosts()
+  const revisions = await loadRevisions()
+  return {
+    posts,
+    revisions,
+  }
+}
