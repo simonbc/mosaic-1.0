@@ -12,12 +12,13 @@
 
     $: hasPosts = $posts !== undefined && Object.values($posts).length > 0
 
-     function handleInput(event) {
+    function handleInput(event) {
       content = event.target.value
     }
     
     function handleCreatePost() {
-        const { slug } = createPost({ content })
+        const cursorPosition = textareaEl.selectionStart ?? 0
+        const { slug } = createPost({ content, cursorPosition })
         navigateTo(slug)
     }
 
