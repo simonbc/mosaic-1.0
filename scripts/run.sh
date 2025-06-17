@@ -15,6 +15,8 @@ echo "🟢 Launching frontend (Vite)..."
 
 # Set environment variable for dev mode
 export IS_DEV=1
+export DATABASE_URL=postgresql://localhost:5432/mosaic
+echo $DATABASE_URL
 
 # Start backend (FastAPI + Uvicorn)
 echo "🚀 Launching backend..."

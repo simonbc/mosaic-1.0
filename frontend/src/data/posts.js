@@ -64,7 +64,6 @@ export function createPost({
   const post = {
     id: uuidv4(), // Assign internal UUID here
     slug,
-    publicId: null,
     cursorPosition,
     published: false,
     createdAt: timestamp,
