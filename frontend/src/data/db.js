@@ -108,28 +108,37 @@ export async function savePosts(posts) {
 // ---- Revisions ----
 
 export async function loadRevisions() {
-  const db = await getDb()
-  const tx = db.transaction(REVISIONS_STORE, 'readonly')
-  const store = tx.store
-  const allRevisions = await store.getAll()
-  const revisions = {}
-  for (const revision of allRevisions) {
-    revisions[revision.id] = revision
+  try {
+    const db = await getDb()
+    const tx = db.transaction(REVISIONS_STORE, 'readonly')
+    const store = tx.store
+    const allRevisions = await store.getAll()
+    const revisions = {}
+    for (const revision of allRevisions) {
+      revisions[revision.id] = revision
+    }
+    return revisions
+  } catch (err) {
+    console.error('Failed to load revisions from IndexedDB', err)
+    return {}
   }
-  return revisions
 }
 
 export async function saveRevisions(revisions) {
-  const db = await getDb()
-  const tx = db.transaction(REVISIONS_STORE, 'readwrite')
-  const store = tx.store
-  for (const id in revisions) {
-    const revision = revisions[id]
-    if (revision && revision.id) {
-      await store.put(revision)
+  try {
+    const db = await getDb()
+    const tx = db.transaction(REVISIONS_STORE, 'readwrite')
+    const store = tx.store
+    for (const id in revisions) {
+      const revision = revisions[id]
+      if (revision && revision.id) {
+        await store.put(revision)
+      }
     }
+    await tx.done
+  } catch (err) {
+    console.error('Failed to save revisions to IndexedDB', err)
   }
-  await tx.done
 }
 
 export async function exportData() {
