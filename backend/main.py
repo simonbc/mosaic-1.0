@@ -13,7 +13,22 @@ from routes import post, handle
 from api.deps import get_db
 from services import post_service
 
+
 app = FastAPI()
+
+# Redirect www.mosaic.pub to mosaic.pub
+from fastapi.responses import RedirectResponse
+from urllib.parse import urlparse, urlunparse
+
+@app.middleware("http")
+async def redirect_www(request: Request, call_next):
+    host = request.headers.get("host", "")
+    if host.startswith("www."):
+        url = request.url
+        netloc = host.replace("www.", "", 1)
+        redirected_url = url._url.replace(host, netloc, 1)
+        return RedirectResponse(url=redirected_url, status_code=308)
+    return await call_next(request)
 
 # Load environment variables
 from dotenv import load_dotenv

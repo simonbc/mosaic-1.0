@@ -25,5 +25,5 @@ primary_region = 'fra'
 
 [env]
   FLY_ENV = "production"
-  VITE_API_BASE = "https://mosaic-prod.fly.dev"
-  FRONTEND_ORIGIN = "https://mosaic-prod.fly.dev"
+  VITE_API_BASE = "https://mosaic.pub"
+  FRONTEND_ORIGIN = "https://mosaic.pub"
