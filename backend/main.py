@@ -3,6 +3,7 @@ from pathlib import Path
 from datetime import datetime
 from markdown import markdown
 
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, FileResponse, Response
 from fastapi.templating import Jinja2Templates
@@ -12,6 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from routes import post, handle
 from api.deps import get_db
 from services import post_service
+from migrations import run_migrations
 
 
 app = FastAPI()
@@ -33,6 +35,14 @@ async def redirect_www(request: Request, call_next):
 # Load environment variables
 from dotenv import load_dotenv
 load_dotenv(dotenv_path=".env")
+
+# Run Alembic migrations only in production
+if os.getenv("FLY_ENV") == "production":
+    try:
+        run_migrations()
+    except Exception as e:
+        print(f"❌ Alembic migration failed: {e}")
+        raise e
 
 SPA_BASE = os.getenv("SPA_BASE", "")
 IS_DEV = os.getenv("IS_DEV") == "1"

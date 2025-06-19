@@ -1,14 +1,20 @@
 # models.py
 
-from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, ForeignKey, func
+from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, ForeignKey, func, UniqueConstraint
 from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
 class Handle(Base):
     __tablename__ = 'handles'
-    handle = Column(String, primary_key=True)
-    public_key = Column(Text)
+    id = Column(Integer, primary_key=True)
+    handle = Column(String, nullable=False)
+    public_key = Column(String, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('handle', name='uq_handle'),
+    )
 
 class Post(Base):
     __tablename__ = 'posts'

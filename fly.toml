@@ -24,6 +24,7 @@ primary_region = 'fra'
   destination = "/data"
 
 [env]
+  DATABASE_URL= "postgresql://localhost:5432/mosaic"
   FLY_ENV = "production"
   VITE_API_BASE = "https://mosaic.pub"
   FRONTEND_ORIGIN = "https://mosaic.pub"
