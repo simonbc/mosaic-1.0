@@ -149,3 +149,10 @@ export async function exportData() {
     revisions,
   }
 }
+
+export async function deletePost(id) {
+  const db = await dbPromise
+  const tx = db.transaction(POSTS_STORE, 'readwrite')
+  await tx.store.delete(id)
+  await tx.done
+}

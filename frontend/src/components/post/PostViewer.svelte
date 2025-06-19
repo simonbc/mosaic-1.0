@@ -4,6 +4,7 @@
 
     import { API_BASE } from '../../env.js'
     import PublishStatus from './PublishStatus.svelte';
+    import DeleteButton from './DeleteButton.svelte';
     import EditButton from './EditButton.svelte';
     import PublishButton from './PublishButton.svelte';
     import PostMeta from './PostMeta.svelte'
@@ -14,6 +15,7 @@
     onMount(async () => {
         headerNav.set([
             { id: 'status', component: PublishStatus },
+            { id: 'delete', component: DeleteButton },
             { id: 'edit', component: EditButton },
             { id: 'publish', component: PublishButton },
         ]);

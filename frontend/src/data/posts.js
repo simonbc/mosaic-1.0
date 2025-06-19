@@ -260,3 +260,18 @@ export async function publishPost(post, revision) {
     console.error(err)
   }
 }
+
+export async function deletePublishedPost(handle, slug) {
+  if (!handle || !slug) {
+    console.error('Handle and slug are required to delete a published post')
+    return
+  }
+
+  try {
+    await apiFetch(`/api/post/${handle}/${slug}`, {
+      method: 'DELETE',
+    })
+  } catch (err) {
+    console.error('Failed to delete published post:', err)
+  }
+}

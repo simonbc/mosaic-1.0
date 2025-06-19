@@ -37,3 +37,12 @@ def get_post_by_slug(handle: str, slug: str, db: Session = Depends(get_db)):
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
     return post
+
+# Delete a published post by handle and slug
+@router.delete("/post/{handle}/{slug}", response_model=dict)
+def delete_post_by_slug(handle: str, slug: str, db: Session = Depends(get_db)):
+    post = post_service.get_post_by_slug(db, handle, slug)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    post_service.delete_post(db, post["id"])
+    return {"status": "deleted"}

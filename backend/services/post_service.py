@@ -119,3 +119,17 @@ def get_post_by_slug(session: Session, handle: str, slug: str):
             "created_at": latest_revision.created_at
         }
     }
+
+
+def delete_post(session: Session, post_id: int):
+    """
+    Delete a post and all its revisions by post ID.
+    """
+    stmt = select(Post).where(Post.id == post_id)
+    post = session.execute(stmt).scalar_one_or_none()
+
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    session.delete(post)
+    session.commit()
