@@ -1,5 +1,7 @@
 <script>
   import { showPublishDialog } from '@data/uiStore.js'
+  import { checkHandleAvailability } from '@data/posts.js'
+  import { tick } from 'svelte'
 
   export let onSubmit = () => {};
   export let handle = '';
@@ -9,6 +11,10 @@
 
   let handleInput;
   let bylineInput;
+
+  let handleAvailable = null;
+  let isChecking = false;
+  let checkTimeout;
 
   function handleSubmit() {
     if (!handle) {
@@ -20,6 +26,25 @@
 
     onSubmit()
     showPublishDialog.set(false)
+  }
+
+  function onHandleInput() {
+    handle = handle.toLowerCase();
+    handleAvailable = null;
+    clearTimeout(checkTimeout);
+    if (!handle) return;
+    isChecking = true;
+    checkTimeout = setTimeout(async () => {
+      const available = await checkHandleAvailability(handle);
+      handleAvailable = available;
+      isChecking = false;
+      await tick();
+      if (!available) {
+        handleError = 'Handle already taken';
+      } else {
+        handleError = '';
+      }
+    }, 400);
   }
 
   import { onMount } from 'svelte';
@@ -46,20 +71,27 @@
     on:keydown|stopPropagation
   >
     <h3 class="publish-title">Publish to...</h3>
-    <label class="label">
+    <label class="label" class:error={handleAvailable !== null || isChecking === true}>
       <div class="handle-input-wrapper">
         <span class="handle-prefix">@</span>
         <input
           bind:this={handleInput}
           type="text"
           bind:value={handle}
-          on:input={() => handle = handle.toLowerCase()}
+          on:input={onHandleInput}
           class="handle-input"
           placeholder="pick a handle"
           tabindex="1"
         />
       </div>
     </label>
+    {#if isChecking}
+      <p class="handle-notice checking">Checking availability...</p>
+    {:else if handle && handleAvailable === false}
+      <p class="handle-notice error">Handle already taken</p>
+    {:else if handle && handleAvailable === true}
+      <p class="handle-notice success">Handle is available</p>
+    {/if}
     {#if !handle && handleError}
       <p class="error">{handleError}</p>
     {/if}
@@ -86,7 +118,14 @@
       >
         Close
       </button>
-      <button class="btn btn-primary" on:click={handleSubmit} tabindex="3">Publish</button>
+      <button
+        class="btn btn-primary"
+        on:click={handleSubmit}
+        tabindex="3"
+        disabled={!handle || isChecking || !handleAvailable}
+      >
+        Publish
+      </button>
     </div>
   </div>
   <button
@@ -99,9 +138,6 @@
 
 <style>
   .publish-dialog {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
     padding: 2rem;
     background: #fff;
     position: relative;
@@ -135,10 +171,19 @@
     margin-left: 1rem;
   }
 
-  .error {
-    color: red;
+  .handle-notice {
+    margin-bottom: 1rem; 
+    margin-left: 1rem;
     font-size: 0.75rem;
-    margin-top: 0;
+    line-height: 1;
+  }
+
+  .handle-notice.error {
+    color: red;
+  }
+
+  .handle-notice.success {
+    color: green;
   }
 
   .overlay {
@@ -196,12 +241,15 @@
 }
 
 .publish-title {
-  margin-bottom: 0;
+  margin-bottom: 0.5rem;
   font-size: 1rem;
 }
 
 .label {
-  margin-bottom: 1rem;
+  margin-bottom: 2.25rem;
+}
+
+.label.error {
+  margin-bottom: 0.5rem;
 }
 </style>
-  

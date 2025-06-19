@@ -11,6 +11,10 @@ class PublishRequest(BaseModel):
     signature: str
     byline: Optional[str] = None
 
-class HandleVerificationRequest(BaseModel):
+class HandleRegistrationRequest(BaseModel):
+    handle: str
     public_key: str
+    signature: str
+
+class HandleVerificationRequest(BaseModel):
     signature: str

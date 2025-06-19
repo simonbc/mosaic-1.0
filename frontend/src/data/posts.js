@@ -232,7 +232,6 @@ export async function publishPost(post, revision) {
   try {
     const { id } = await apiFetch(`/api/post/${post.handle}/${post.slug}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body,
     })
 
@@ -273,5 +272,28 @@ export async function deletePublishedPost(handle, slug) {
     })
   } catch (err) {
     console.error('Failed to delete published post:', err)
+  }
+}
+
+export async function checkHandleAvailability(handle) {
+  if (!handle) return false
+
+  const { privateKeyJwk } = await getOrCreateKeyPair()
+  const signature = await signHandle(handle, privateKeyJwk)
+
+  const body = JSON.stringify({
+    signature,
+  })
+
+  try {
+    const { available } = await apiFetch(`/api/handle/${handle}/check`, {
+      method: 'POST',
+      body,
+    })
+
+    return available
+  } catch (err) {
+    console.error('Failed to check handle availability:', err)
+    return false
   }
 }
