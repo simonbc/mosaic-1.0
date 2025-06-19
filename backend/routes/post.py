@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, Body
 from sqlalchemy.orm import Session
 
 from api.deps import get_db
@@ -12,7 +12,7 @@ router = APIRouter()
 def publish_post(
     handle: str = Path(...),
     slug: str = Path(...),
-    post_data: PublishRequest = None,
+    post_data: PublishRequest = Body(...),
     db: Session = Depends(get_db)
 ):
     post_data.handle = handle
