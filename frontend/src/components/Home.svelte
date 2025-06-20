@@ -5,6 +5,7 @@
     import { footerNav } from '@data/uiStore.js';
 
     import FooterMenu from '@components/FooterMenu.svelte';
+    import DraftNotice from '@components/DraftNotice.svelte';
 
     let textareaEl
     let content
@@ -42,9 +43,12 @@
             on:input={handleInput}
             placeholder="Start writing..."
             class="content-input"
-            autofocus
+            tabindex="1"
         ></textarea>
-        <button class="btn btn-primary" on:click={handleCreatePost}>
+
+        <DraftNotice />
+
+        <button class="btn btn-primary publish-button" on:click={handleCreatePost} tabindex="2">
             Create a post
         </button>
     </div>
@@ -97,7 +101,7 @@
         width: 100%;
         min-height: 130px;
         resize: none;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
         padding: 1.5rem;
         border-color: #ddd;
         border-radius: 25px;
@@ -114,9 +118,12 @@
 
     @media (min-width: 768px) {
         .content-input {
-            margin-bottom: 2rem;
             font-size: 1.1rem;
             max-width: 700px;
         }
+    }
+
+    .publish-button {
+        margin-top: 1.5rem;
     }
 </style>

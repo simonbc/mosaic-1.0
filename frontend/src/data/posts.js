@@ -1,4 +1,4 @@
-import { get, writable } from 'svelte/store'
+import { get, writable, derived } from 'svelte/store'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -296,4 +296,26 @@ export async function checkHandleAvailability(handle) {
     console.error('Failed to check handle availability:', err)
     return false
   }
+}
+
+export const draftCount = derived(posts, ($posts) => {
+  if (!$posts) return 0
+  return Object.values($posts).filter((post) => !post.published).length
+})
+
+export function getDrafts() {
+  const allPosts = get(posts)
+  const allRevs = get(revisions)
+
+  return Object.values(allPosts)
+    .filter((post) => !post.published)
+    .map((post) => {
+      const revision = allRevs[post.latestRevisionId]
+      return {
+        ...post,
+        content: revision?.content ?? '',
+        updatedAt: revision?.updatedAt ?? post.updatedAt,
+      }
+    })
+    .sort((a, b) => b.createdAt - a.createdAt)
 }

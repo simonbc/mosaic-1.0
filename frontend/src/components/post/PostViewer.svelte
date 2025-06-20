@@ -23,12 +23,14 @@
 </script>
 
 <section class="post-section">
-    <div class="post-content">
-      {@html marked.parse(
+    <div>
+      <div class="post-content">
+        {@html marked.parse(
             $previewRevision 
                 ? $previewRevision.content
                 : $currentPost.revision.content
-      )}
+        )}
+      </div>
       <PostMeta post={$currentPost.post} />
     </div>
 </section>

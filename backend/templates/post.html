@@ -19,17 +19,16 @@
             <section class="post-section">
               <div>
                 <div class="post-content">
-                  <div>{{ post.revision.content | markdown | safe }}</div>
-
-                  <div class="post-meta">
-                    <div>
-                      by
-                      <a href="#"
-                        >{{ post.byline if post.byline else '@' + post.handle
-                        }}</a
-                      >
-                      · {{ post.updated_at | datetimeformat }}
-                    </div>
+                  {{ post.revision.content | markdown | safe }}
+                </div>
+                <div class="post-meta">
+                  <div>
+                    by
+                    <a href="#"
+                      >{{ post.byline if post.byline else '@' + post.handle
+                      }}</a
+                    >
+                    · {{ post.updated_at | datetimeformat }}
                   </div>
                 </div>
               </div>
