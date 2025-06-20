@@ -122,7 +122,7 @@
         class="btn btn-primary"
         on:click={handleSubmit}
         tabindex="3"
-        disabled={!handle || isChecking || !handleAvailable}
+        disabled={!handle || isChecking || handleAvailable === false}
       >
         Publish
       </button>
