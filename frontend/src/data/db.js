@@ -14,48 +14,34 @@ function generateSlug(length = 8) {
 }
 
 const DB_NAME = 'mosaic'
-const DB_VERSION = 5
+const DB_VERSION = 1
 
 const POSTS_STORE = 'posts'
 const REVISIONS_STORE = 'revisions'
 
+function createPostsStore(db) {
+  const postStore = db.createObjectStore(POSTS_STORE, { keyPath: 'id' })
+  postStore.createIndex('slug', 'slug', { unique: true })
+}
+
+function createRevisionsStore(db) {
+  db.createObjectStore(REVISIONS_STORE, { keyPath: 'id' })
+}
+
+function runMigrations() {}
+
 const dbPromise = openDB(DB_NAME, DB_VERSION, {
   async upgrade(db, oldVersion) {
-    if (oldVersion < 5) {
-      if (db.objectStoreNames.contains(POSTS_STORE)) {
-        // Migrate old posts store to use UUID-based "id" as keyPath
-        // 1. Read all existing posts
-        const oldStore = db
-          .transaction(POSTS_STORE, 'readonly')
-          .objectStore(POSTS_STORE)
-        const allPosts = await oldStore.getAll()
-
-        // 2. Create temp object store with keyPath "id"
-        const tempStoreName = 'posts_v2'
-        if (db.objectStoreNames.contains(tempStoreName)) {
-          db.deleteObjectStore(tempStoreName)
-        }
-        const newStore = db.createObjectStore(tempStoreName, { keyPath: 'id' })
-
-        // 3. Copy posts, assign UUID if missing
-        for (const post of allPosts) {
-          if (!post.id) {
-            post.id = uuidv4()
-          }
-
-          // Use the IDBObjectStore of the upgrade transaction
-          newStore.put(post)
-        }
-
-        // 4. Replace original store with new one
-        db.deleteObjectStore(POSTS_STORE)
-        db.renameObjectStore(tempStoreName, POSTS_STORE)
-      } else {
-        db.createObjectStore(POSTS_STORE, { keyPath: 'id' })
-      }
+    // posts store migrations
+    if (!db.objectStoreNames.contains(POSTS_STORE)) {
+      createPostsStore(db)
+    } else {
+      runMigrations()
     }
+
+    // revisions store migrations
     if (!db.objectStoreNames.contains(REVISIONS_STORE)) {
-      db.createObjectStore(REVISIONS_STORE, { keyPath: 'id' })
+      createRevisionsStore(db)
     }
   },
   blocked() {

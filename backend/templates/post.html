@@ -45,40 +45,56 @@
     </div>
     <script type="module">
       const DB_NAME = 'mosaic'
-      const DB_VERSION = 5
+      const DB_VERSION = 1
       const slug = '{{ post.slug }}'
-      const id = '{{ post.id }}'
 
       async function checkAndRedirect() {
+        const DB_NAME = 'mosaic'
+        const DB_VERSION = 6
+        const slug = '{{ post.slug }}'
+
         try {
+          if ('databases' in indexedDB) {
+            const existing = await indexedDB.databases()
+            const found = existing.some((db) => db.name === DB_NAME)
+            if (!found) return
+          }
+
+          const request = indexedDB.open(DB_NAME)
           const db = await new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_NAME, DB_VERSION)
-
-            request.onupgradeneeded = (event) => {
-              const db = event.target.result
-              if (!db.objectStoreNames.contains('posts')) {
-                db.createObjectStore('posts')
-              }
-            }
-
-            request.onerror = () => reject(request.error)
             request.onsuccess = () => resolve(request.result)
+            request.onerror = () => reject(request.error)
           })
+
+          if (!db.objectStoreNames.contains('posts')) {
+            db.close()
+            return
+          }
 
           const tx = db.transaction('posts', 'readonly')
           const store = tx.objectStore('posts')
-          const getRequest = store.get(id)
 
-          getRequest.onsuccess = (event) => {
-            const post = event.target.result
-            if (post) {
-              const header = document.querySelector('.app-header')
-              const editButton = document.createElement('a')
-              editButton.href = `/draft/${post.slug}/edit`
-              editButton.textContent = 'Edit'
-              editButton.className = 'btn btn-secondary'
-              header.appendChild(editButton)
-            }
+          if (!store.indexNames.contains('slug')) {
+            db.close()
+            return
+          }
+
+          const post = await new Promise((resolve, reject) => {
+            const index = store.index('slug')
+            const getRequest = index.get(slug)
+            getRequest.onsuccess = () => resolve(getRequest.result)
+            getRequest.onerror = () => reject(getRequest.error)
+          })
+
+          db.close()
+
+          if (post) {
+            const header = document.querySelector('.app-header')
+            const editButton = document.createElement('a')
+            editButton.href = `/draft/${post.slug}/edit`
+            editButton.textContent = 'Edit'
+            editButton.className = 'btn btn-secondary'
+            header.appendChild(editButton)
           }
         } catch (e) {
           console.error('IndexedDB error:', e)
