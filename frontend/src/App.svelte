@@ -4,9 +4,10 @@
     import Header from './components/layout/Header.svelte'
     import Footer from './components/layout/Footer.svelte'
     import Home from './components/Home.svelte'
+    import HandlePage from './components/HandlePage.svelte'
     import Post from './components/post/Post.svelte'
 
-    import { currentSlug, startRouting, stopRouting} from './routing.js'
+    import { currentHandle, currentSlug, startRouting, stopRouting} from './routing.js'
     import { loadPost  } from '@data/posts.js'
     import { editing } from '@data/uiStore'
 
@@ -25,13 +26,15 @@
 
 {#if $currentSlug !== undefined}
     <div class="app-main" role="main">
-        {#if $currentSlug}
+        {#if $currentSlug || $currentHandle}
             <Header />
         {/if}
         <div class="app-container" class:editing={$editing}>
             <div class="app-content">
                 {#if $currentSlug}
                     <Post />
+                {:else if $currentHandle}
+                    <HandlePage />
                 {:else}
                     <Home />
                 {/if}

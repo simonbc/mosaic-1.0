@@ -11,24 +11,29 @@ export function goto(path) {
 }
 
 export function updateRoute() {
-  let path = window.location.pathname.slice(1) // remove leading slash
+  let path = window.location.pathname.replace(/^\/|\/$/g, '') // remove leading and trailing slash
   const segments = path.split('/')
 
   let handle
   let slug = ''
 
-  if (segments.length === 2 && segments[0] === 'draft') {
-    // /draft/{slug}
-    slug = segments[1]
-  } else if (segments.length >= 2) {
-    // /@handle/{slug}
-    handle = segments[0].slice(1) // remove leading @
-    slug = segments[1]
+  if (segments[0].startsWith('@')) {
+    if (segments.length === 1) {
+      // /@handle
+      handle = segments[0].slice(1)
+    } else {
+      // /@handle/{slug}
+      handle = segments[0].slice(1)
+      slug = segments[1]
 
-    if (segments.length === 3) {
-      if (segments[2] === 'edit') {
+      if (segments.length === 3 && segments[2] === 'edit') {
         editing.set(true)
       }
+    }
+  } else {
+    if (segments.length === 2 && segments[0] === 'draft') {
+      // /draft/{slug}
+      slug = segments[1]
     }
   }
 

@@ -5,7 +5,7 @@
 <div class="post-meta">
     <div>
         {#if post.byline || post.handle}
-            by <a href="#">{post.byline || `@${post.handle}`}</a> ·
+            by <a href={`/@${post.handle}`}>{post.byline || `@${post.handle}`}</a> ·
         {/if}
         {new Date(post.updatedAt).toLocaleDateString(undefined, {
             year: 'numeric',

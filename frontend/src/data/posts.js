@@ -319,3 +319,13 @@ export function getDrafts() {
     })
     .sort((a, b) => b.createdAt - a.createdAt)
 }
+
+export async function fetchPostsByHandle(handle) {
+  if (!handle) return []
+  try {
+    return await apiFetch(`/api/handle/${handle}/posts`)
+  } catch (err) {
+    console.error(`Failed to fetch posts for handle "${handle}":`, err)
+    return []
+  }
+}

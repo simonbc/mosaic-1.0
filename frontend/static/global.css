@@ -407,6 +407,13 @@ pre {
   overflow: visible;
 }
 
+/* handle */
+.handle-container {
+  margin: 70px auto 0;
+  padding: 1.5rem 1rem;
+  max-width: 640px;
+}
+
 /* post */
 .post {
   margin-top: 70px;

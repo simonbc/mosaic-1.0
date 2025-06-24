@@ -27,7 +27,7 @@
     <ul class="list-unstyled">
       {#each drafts as draft}
         <li class="draft">
-          <a class="draft-link" href="/drafts/{draft.slug}">
+          <a class="draft-link" href="/draft/{draft.slug}">
             <div class="draft-excerpt">
               {#if draft.content}
                 {draft.content.trim().slice(0, 50)}{draft.content.trim().length > 75 ? '…' : ''}
@@ -92,13 +92,6 @@
       font-weight: 500;
       margin-bottom: 0.25rem;
       color: #222;
-    }
-
-    .draft-title {
-      font-weight: 600;
-      font-size: 1.05rem;
-      margin-bottom: 0.25rem;
-      color: #333;
     }
 
     .modal-footer {
