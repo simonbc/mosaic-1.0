@@ -1,0 +1,29 @@
+{% extends "base.html" %} {% block title %}@{{ handle.handle }} ·
+Mosaic{%endblock %} {% block css %}<link
+  rel="stylesheet"
+  href="/static/handle.css"
+/><link rel="stylesheet" href="/static/post.css" />{%endblock %} {% block
+content %}
+<div class="handle-container">
+  <section class="handle-header">
+    <h1>@{{ handle.handle }}</h1>
+  </section>
+  <ul class="handle-posts">
+    {% for post in posts %}
+    <li class="handle-post">
+      <a class="handle-post-link" href="/@{{ post.handle }}/{{ post.slug }}">
+        <div class="post-section">
+          <div class="post-content">
+            {{ post.latest_revision.content | excerpt_md | markdown | safe }}
+          </div>
+          <div class="post-meta">
+            {{ post.updated_at.strftime('%-d %B %Y') }} · {{
+            post.updated_at.strftime('%H:%M') }}
+          </div>
+        </div>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

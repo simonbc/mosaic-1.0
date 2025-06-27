@@ -3,8 +3,8 @@
 
     import Header from './components/layout/Header.svelte'
     import Footer from './components/layout/Footer.svelte'
-    import Home from './components/Home.svelte'
-    import HandlePage from './components/HandlePage.svelte'
+    import Home from './components/home/Home.svelte'
+    import HandleViewer from './components/handle/HandleViewer.svelte'
     import Post from './components/post/Post.svelte'
 
     import { currentHandle, currentSlug, startRouting, stopRouting} from './routing.js'
@@ -12,7 +12,7 @@
     import { editing } from '@data/uiStore'
 
     $: if ($currentSlug) {
-        loadPost($currentSlug)
+        loadPost($currentHandle, $currentSlug)
     }
 
     onMount(() => {
@@ -34,7 +34,7 @@
                 {#if $currentSlug}
                     <Post />
                 {:else if $currentHandle}
-                    <HandlePage />
+                    <HandleViewer />
                 {:else}
                     <Home />
                 {/if}

@@ -407,33 +407,6 @@ pre {
   overflow: visible;
 }
 
-/* handle */
-.handle-container {
-  margin: 70px auto 0;
-  padding: 1.5rem 1rem;
-  max-width: 640px;
-}
-
-/* post */
-.post {
-  margin-top: 70px;
-  padding: 1.5rem 1rem;
-  display: flex;
-  justify-content: center;
-}
-
-@media (min-width: 768px) {
-  .post {
-    padding: 4rem 2rem;
-    min-height: calc(100vh - 140px);
-    align-items: center;
-  }
-
-  .post.editing {
-    padding: 1rem 2rem;
-  }
-}
-
 /* header */
 .app-header {
   position: relative;
@@ -523,46 +496,53 @@ pre {
   text-decoration: underline;
 }
 
-/* PostViewer */
-.post-section {
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-  max-width: 640px;
-  width: 100%;
-  font-family: var(--font-post-content);
-  font-size: var(--font-post-content-size);
-  font-weight: var(--font-post-content-weight);
-  line-height: var(--font-post-content-line-height);
-  letter-spacing: var(--font-post-content-letter-spacing);
-}
-
-@media (min-width: 768px) {
-  .post-section {
-    align-items: center;
-    width: unset;
-  }
-}
-
-.post-meta {
-  font-size: 0.7rem;
-  color: #666;
-  font-style: italic;
-}
-
-@media (min-width: 768px) {
-  .post-meta {
-    font-size: 0.85rem;
-  }
-}
-
-.post-content {
-  margin-bottom: 1rem;
-}
-
 /* Utility: Unstyled list */
 .list-unstyled {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+/* modal */
+
+.modal-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 25px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  padding: 5rem;
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  overflow-y: auto;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.modal-close:hover {
+  transform: scale(1.1);
 }

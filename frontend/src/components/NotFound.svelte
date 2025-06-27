@@ -6,7 +6,7 @@
   
     async function createNewPost() {
       await createPost({ slug: $currentSlug });
-      await loadPost($currentSlug);
+      await loadPost(null, $currentSlug);
       editing.set(true);
     }
   </script>
@@ -17,12 +17,3 @@
     <button class="btn btn-primary" on:click={createNewPost}>Create this post</button>
   </div>
   
-  <style>
-    .not-found {
-      text-align: center;
-    }
-
-    .slug {
-      font-family: var(--font-mono);
-    }
-  </style>

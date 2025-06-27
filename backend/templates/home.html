@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mosaic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/index.css" />
+    <link href="/static/favicon.ico" rel="icon" />
+  </head>
+  <body>
+    <div id="ssr" class="app-main" role="main">
+      <div class="app-container">
+        <div class="app-content">
+          <section class="home">
+            <h1 class="logo-home">
+              <a href="/">Mosaic</a>
+            </h1>
+
+            <div class="container">
+              <textarea
+                placeholder="Start writing..."
+                class="content-input"
+                tabindex="1"
+              ></textarea>
+
+              <div class="publish-button-wrapper">
+                <button class="btn btn-primary" tabindex="2">
+                  Create a post
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+      <footer class="footer">
+        <div>
+          powered by
+          <a href="/">mosaic</a>
+        </div>
+      </footer>
+    </div>
+    <div id="app"></div>
+    <script type="module" src="/{{ js_file }}"></script>
+  </body>
+</html>

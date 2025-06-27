@@ -120,6 +120,38 @@ def get_post_by_slug(session: Session, handle: str, slug: str):
         }
     }
 
+def get_posts_by_handle(session: Session, handle: str):
+    """
+    Retrieve all posts for a given handle, including their latest revisions.
+    """
+    stmt = select(Post).where(Post.handle.ilike(handle)).order_by(desc(Post.created_at))
+    posts = session.execute(stmt).scalars().all()
+
+    results = []
+    for post in posts:
+        revision_stmt = (
+            select(Revision)
+            .where(Revision.post_id == post.id)
+            .order_by(desc(Revision.created_at))
+            .limit(1)
+        )
+        latest_revision = session.execute(revision_stmt).scalar_one_or_none()
+
+        results.append({
+            "id": post.id,
+            "handle": post.handle,
+            "slug": post.slug,
+            "created_at": post.created_at,
+            "updated_at": post.updated_at,
+            "byline": post.byline,
+            "latest_revision": {
+                "id": latest_revision.id if latest_revision else None,
+                "content": latest_revision.content if latest_revision else None,
+                "created_at": latest_revision.created_at if latest_revision else None
+            }
+        })
+
+    return results
 
 def delete_post(session: Session, post_id: int):
     """

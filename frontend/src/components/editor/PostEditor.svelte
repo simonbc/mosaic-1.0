@@ -2,16 +2,17 @@
     import { onMount, onDestroy } from 'svelte'
     import { marked } from 'marked'
 
-    import { API_BASE } from '../../env.js'
     import RevisionsButton from './RevisionsButton.svelte';
     import PreviewButton from './PreviewButton.svelte';
     import SaveButton from './SaveButton.svelte';
 
-    import { navigateTo, currentHandle, currentSlug } from '../../routing.js'
-    import { currentPost, createPost, updatePost, loadPost, fetchPublicPost, publishPost } from '@data/posts.js'
+    import { navigateTo } from '../../routing.js'
+    import { currentPost, updatePost, loadPost, publishPost } from '@data/posts.js'
     import { settings } from '@data/settingsStore.js'
-    import { previewRevision, editing, headerNav } from '@data/uiStore.js'
+    import { previewRevision, headerNav } from '@data/uiStore.js'
     import { shortcut } from '@actions/shortcut.js'
+
+    import './editor.css'
 
     let contentEditable;
     let content;
@@ -41,15 +42,14 @@
 
         const trimmedContent = normalizedContent.replace(/\n+$/, '');
         if (trimmedContent !== $currentPost.revision.content) {
-            await updatePost($currentPost.post.id, { content: trimmedContent, cursorPosition });
+            await updatePost($currentPost.id, { content: trimmedContent, cursorPosition });
 
-            const { post, revision } = $currentPost
-            if ($currentPost.post.published) {
-                publishPost(post, { ...revision, content: trimmedContent })
-                navigateTo(post.slug, post.handle)
+            if ($currentPost.published) {
+                publishPost($currentPost, { ...$currentPost.revision, content: trimmedContent })
+                navigateTo($currentPost.slug, $currentPost.handle)
             }
 
-            await loadPost(post.slug);
+            await loadPost($currentPost.handle, $currentPost.slug);
             previewRevision.set(null)
         }
     }
@@ -123,21 +123,21 @@
         if (!$previewRevision || !$currentPost) return;
 
         await updatePost(
-            $currentPost.post.id,
+            $currentPost.id,
             {
                 content: $previewRevision.content, // Restore old content
                 cursorPosition: $previewRevision.content.length, // Set cursor to end of restored content
             }
         );
 
-        await loadPost($currentPost.post.slug);
+        await loadPost($currentPost.handle, $currentPost.slug);
         previewRevision.set(null);
     }
 
     function onSave() {
         toggleShowRevisions(false);
         savePost();
-        navigateTo($currentPost.post.slug, $currentPost.post.handle);
+        navigateTo($currentPost.slug, $currentPost.handle);
     }
 
     // Only allow plain text on paste in the content editor
@@ -157,7 +157,7 @@
         if ($previewRevision) {
             cursorPosition = $previewRevision.content.length;
         } else {
-            cursorPosition = $currentPost.post.cursorPosition ?? 0;
+            cursorPosition = $currentPost.cursorPosition ?? 0;
         }
         requestAnimationFrame(restoreCursorPosition);
     });
@@ -208,174 +208,3 @@
         </div>
     </div>
 </main>
-
-<style>
-    .split-container {
-        padding: 1rem 0;    
-        color: #222;
-        position: relative;
-        display: flex;
-        justify-content: center;
-        gap: 60px;
-        width: 100%;
-        overflow: visible;
-    }
-
-    @media (min-width: 768px) {
-        .split-container {
-            padding: 2rem 5rem;
-        }
-    }
-
-    .editor-container {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    @media (min-width: 768px) {
-        .editor-container {
-            width: 50%;
-        }
-    }
-
-    .editor-container.full {
-        width: 100%;
-    }
-
-    .preview-container {
-        display: none;
-        width: 50%;
-    }
-
-    @media (min-width: 768px) {
-        .preview-container {
-            display: block;
-        }
-    }
-
-    .preview-container.hidden {
-        width: 0;
-        opacity: 0;
-        pointer-events: none;
-        transform: translateY(1rem);
-    }
-
-    .preview-container:not(:has(.content-preview.has-content)) {
-        display: none;
-    }
-
-    .content-input {
-        display: none;
-    }
-
-    .content-editor {
-      width: 100%;
-      max-width: 640px;
-      margin: 0 auto;
-      min-height: 130px;
-      padding: 2rem;
-      border: 1px solid #ddd;
-      border-radius: 25px;
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
-      font-family: var(--font-mono);
-      font-size: 1rem;
-      line-height: 1.9;
-      white-space: pre-wrap;
-      word-break: break-word;
-      outline: none;
-    }
-
-    .content-editor:focus {
-      outline: none;
-      box-shadow: 0 0 0 2px var(--color-accent);
-    }
-
-    @media (min-width: 768px) {
-        .content-input {
-            font-size: 1.1rem;
-            min-width: calc(50vw - 90px);
-            max-width: 768px;
-        }
-    }
-
-    .content-preview {
-        font-family: var(--font-post-content);
-        font-size: var(--font-post-content-size);
-        font-weight: var(--font-post-content-weight);
-        letter-spacing: var(--font-post-content-letter-spacing);
-        line-height: var(--font-post-content-line-height);
-        width: 100%;
-        max-width: 640px;
-        margin: 0 auto;
-    }
-
-    .content-preview.has-content {
-        min-height: 130px;
-    }
-
-    .content-input:focus {
-        outline: none;
-        box-shadow: 0 0 0 2px var(--color-accent);
-    }
-
-    /* Buttons */
-    button {
-        padding: 0.5rem 1rem;
-        font-size: 1rem;
-        background: none;
-        border: 1px solid #ccc;
-        border-radius: var(--radius);
-        cursor: pointer;
-        color: var(--color-text);
-        transition: background var(--transition);
-    }
-
-    button:hover {
-        background: #eee;
-    }
-
-    .revision-banner {
-        position: fixed;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100%;
-        background-color: var(--color-bg);
-        z-index: 11;
-        border: 1px solid #ddd;
-        padding: 0.75rem 1.5rem;
-        text-align: center;
-        font-size: 0.95rem;
-    }
-
-    @media(min-width: 768px) {
-        .revision-banner {
-            top: 6.5rem;
-            bottom: unset;
-            display: flex;
-            width: unset;
-            border-radius: 25px;
-        }
-    }
-
-    .revision-banner .btn-link {
-        all: unset;
-        cursor: pointer;
-        color: var(--color-accent);
-        text-underline-offset: 2px;
-        margin: 0 0.25rem;
-    }
-
-    .revision-banner .btn-link:hover {
-        text-decoration-thickness: 2px;
-        color: #3c3c3c;
-    }
-
-    .content-editor:empty::before {
-        content: attr(data-placeholder);
-        color: #aaa;
-        pointer-events: none;
-    }
-</style>

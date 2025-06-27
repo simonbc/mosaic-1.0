@@ -2,7 +2,6 @@
     import { onMount } from 'svelte';
     import { marked } from 'marked';
 
-    import { API_BASE } from '../../env.js'
     import PublishStatus from './PublishStatus.svelte';
     import DeleteButton from './DeleteButton.svelte';
     import EditButton from './EditButton.svelte';
@@ -11,6 +10,8 @@
 
     import { previewRevision, headerNav } from '@data/uiStore.js';
     import { currentPost } from '@data/posts.js';
+
+    import './post.css'
 
     onMount(async () => {
         headerNav.set([
@@ -31,6 +32,6 @@
                 : $currentPost.revision.content
         )}
       </div>
-      <PostMeta post={$currentPost.post} />
+      <PostMeta post={$currentPost} />
     </div>
 </section>

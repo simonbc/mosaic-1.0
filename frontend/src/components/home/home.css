@@ -1,0 +1,126 @@
+.home {
+  margin-top: 70px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 768px) {
+  .home {
+    min-height: calc(100vh - 140px);
+  }
+}
+
+.logo-home {
+  margin-bottom: 1.5rem;
+  font-weight: 800;
+  font-size: 2.2rem;
+  background: linear-gradient(90deg, #117a65, #28b463, #82e0aa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  /* font-family: var(--font-mono); */
+}
+
+@media (min-width: 768px) {
+  .logo-home {
+    margin-bottom: 0;
+    font-size: 4rem;
+  }
+}
+
+.logo-home a {
+  text-decoration: none;
+}
+
+.container {
+  text-align: center;
+}
+
+.content-input {
+  width: 100%;
+  min-height: 130px;
+  resize: none;
+  margin-bottom: 0.5rem;
+  padding: 1.5rem;
+  border-color: #ddd;
+  border-radius: 25px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  line-height: 1.9;
+}
+
+.content-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-accent);
+}
+
+@media (min-width: 768px) {
+  .content-input {
+    font-size: 1.1rem;
+    max-width: 700px;
+  }
+}
+
+.publish-button-wrapper {
+  margin-top: 1.5rem;
+}
+
+/* draft notice */
+
+.notice {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.view-drafts {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.drafts {
+  max-height: 45vh;
+  overflow-y: auto;
+  margin: 1.5rem 0;
+  padding: 0 1rem;
+}
+
+.draft {
+  margin-bottom: 2rem;
+  text-align: left;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.draft:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.draft-link {
+  font-family: var(--font-mono);
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.draft-link:hover .draft-excerpt {
+  text-decoration: underline;
+  color: #111;
+}
+
+.draft-excerpt {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: #222;
+}
+
+.modal-footer {
+  text-align: center;
+  margin-top: 2rem;
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Mosaic{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/global.css" />
+    {% if css_file %}
+    <link rel="preload" as="style" href="/{{ css_file }}" />
+    {% endif %} {% block css %}{% endblock %}
+    <link href="/static/favicon.ico" rel="icon" />
+  </head>
+  <body>
+    <div id="ssr" class="app-main" role="main">
+      <header class="app-header">
+        <div class="logo">
+          <a href="/">mosaic</a>
+        </div>
+      </header>
+      <div class="app-container">
+        <div class="app-content">{% block content %}{% endblock %}</div>
+      </div>
+      <footer class="footer">
+        <div>
+          powered by
+          <a href="/">mosaic</a>
+        </div>
+      </footer>
+    </div>
+    <div id="app"></div>
+    <script type="module" src="/{{ js_file }}"></script>
+  </body>
+</html>

@@ -1,107 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Mosaic</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/static/global.css" />
-  </head>
-  <body>
-    <div class="app-main" role="main">
-      <header class="app-header">
-        <div class="logo">
-          <a href="/">mosaic</a>
-        </div>
-      </header>
-      <div class="app-container">
-        <div class="app-content">
-          <article class="post">
-            <section class="post-section">
-              <div>
-                <div class="post-content">
-                  {{ post.revision.content | markdown | safe }}
-                </div>
-                <div class="post-meta">
-                  <div>
-                    by
-                    <a href="#"
-                      >{{ post.byline if post.byline else '@' + post.handle
-                      }}</a
-                    >
-                    · {{ post.updated_at | datetimeformat }}
-                  </div>
-                </div>
-              </div>
-            </section>
-          </article>
+{% extends "base.html" %} {% block title %}{{ post.title if post.title else
+"Mosaic" }}{% endblock %}{% block css %}<link
+  rel="stylesheet"
+  href="/static/post.css"
+/>
+<link rel="stylesheet" href="/static/editor.css" />{%endblock %} {% block
+content %}
+<article class="post">
+  <section class="post-section">
+    <div>
+      <div class="post-content">
+        {{ post.revision.content | markdown | safe }}
+      </div>
+      <div class="post-meta">
+        <div>
+          by
+          <a href="/@{{post.handle}}">
+            {{ post.byline if post.byline else '@' + post.handle }}
+          </a>
+          · {{ post.updated_at | datetimeformat }}
         </div>
       </div>
-      <footer class="footer">
-        <div>
-          powered by
-          <a href="/">mosaic</a>
-        </div>
-      </footer>
     </div>
-    <script type="module">
-      const DB_NAME = 'mosaic'
-      const DB_VERSION = 1
-      const slug = '{{ post.slug }}'
-
-      async function checkAndRedirect() {
-        const DB_NAME = 'mosaic'
-        const DB_VERSION = 6
-        const slug = '{{ post.slug }}'
-
-        try {
-          if ('databases' in indexedDB) {
-            const existing = await indexedDB.databases()
-            const found = existing.some((db) => db.name === DB_NAME)
-            if (!found) return
-          }
-
-          const request = indexedDB.open(DB_NAME)
-          const db = await new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result)
-            request.onerror = () => reject(request.error)
-          })
-
-          if (!db.objectStoreNames.contains('posts')) {
-            db.close()
-            return
-          }
-
-          const tx = db.transaction('posts', 'readonly')
-          const store = tx.objectStore('posts')
-
-          if (!store.indexNames.contains('slug')) {
-            db.close()
-            return
-          }
-
-          const post = await new Promise((resolve, reject) => {
-            const index = store.index('slug')
-            const getRequest = index.get(slug)
-            getRequest.onsuccess = () => resolve(getRequest.result)
-            getRequest.onerror = () => reject(getRequest.error)
-          })
-
-          db.close()
-
-          if (post) {
-            const header = document.querySelector('.app-header')
-            const editButton = document.createElement('a')
-            editButton.href = `/draft/${post.slug}/edit`
-            editButton.textContent = 'Edit'
-            editButton.className = 'btn btn-secondary'
-            header.appendChild(editButton)
-          }
-        } catch (e) {
-          console.error('IndexedDB error:', e)
-        }
-      }
-
-      checkAndRedirect()
-    </script>
-  </body>
-</html>
+  </section>
+</article>
+{% endblock %}

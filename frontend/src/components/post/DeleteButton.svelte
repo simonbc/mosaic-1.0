@@ -8,11 +8,11 @@
     if (!confirm("Are you sure you want to delete this post?")) return
 
     try {
-      if ($currentPost.post.published) {
-        await deletePublishedPost($currentPost.post.handle, $currentPost.post.slug)
+      if ($currentPost.published) {
+        await deletePublishedPost($currentPost.handle, $currentPost.slug)
       }
 
-      await deletePost($currentPost.post.id)
+      await deletePost($currentPost.id)
       goto('/')
     } catch (err) {
       console.error('Failed to delete post:', err)

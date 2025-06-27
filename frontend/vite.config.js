@@ -15,6 +15,14 @@ export default defineConfig(({ mode }) => {
             src: 'static/*',
             dest: 'static',
           },
+          {
+            src: 'src/components/**/*.css',
+            dest: 'static',
+          },
+          {
+            src: 'public/favicon.ico',
+            dest: 'static',
+          },
         ],
       }),
     ],
@@ -29,13 +37,16 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'dist',
+      manifest: true,
       assetsDir: 'static',
       emptyOutDir: true,
       rollupOptions: {
         output: {
           assetFileNames: 'static/[name][extname]',
+          entryFileNames: 'static/[name].[hash].js',
         },
       },
+      // cssCodeSplit: true, // ensures component CSS is emitted separately
     },
     base: '/',
     define: {

@@ -37,11 +37,3 @@
         <Revisions />
     </div>
 {/if}
-
-
-<style>
-    .revisions-container {
-        position: relative;
-        display: inline-block;
-    }
-</style>

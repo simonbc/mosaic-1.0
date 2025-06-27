@@ -141,7 +141,7 @@ export async function waitFor(store) {
   })
 }
 
-export async function loadPost(slug) {
+export async function loadPost(handle, slug) {
   if (!slug) {
     currentPost.set(null)
     return currentPost
@@ -159,17 +159,27 @@ export async function loadPost(slug) {
 
   const allRevisions = get(revisions)
   const revision = allRevisions[post.latestRevisionId] ?? null
-  if (!revision) {
-    currentPost.set(null)
+  if (revision) {
+    // Local draft
+    currentPost.set({
+      ...post,
+      revision,
+      revisions: Object.values(allRevisions)
+        .filter((r) => r.postId === post.id)
+        .sort((a, b) => b.createdAt - a.createdAt),
+    })
     return currentPost
   }
-  currentPost.set({
-    post,
-    revision,
-    revisions: Object.values(allRevisions)
-      .filter((r) => r.postId === post.id)
-      .sort((a, b) => b.createdAt - a.createdAt),
-  })
+
+  const publicPost = await fetchPublicPost(handle, slug)
+
+  if (publicPost) {
+    // Public post
+    currentPost.set(publicPost)
+  } else {
+    // Not found
+    currentPost.set(null)
+  }
 
   return currentPost
 }
@@ -253,7 +263,7 @@ export async function publishPost(post, revision) {
       },
     }))
 
-    await loadPost(post.slug)
+    await loadPost(post.handle, post.slug)
   } catch (err) {
     alert('Failed to publish post')
     console.error(err)

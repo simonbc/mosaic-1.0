@@ -14,22 +14,21 @@
     let handle = '';
     let byline = '';
 
-    $: handle = $currentPost?.post.handle || $settings.handle
-    $: byline = $currentPost?.post.byline || $settings.byline
+    $: handle = $currentPost?.handle || $settings.handle
+    $: byline = $currentPost?.byline || $settings.byline
 
     async function handlePublish() {
-        const { post, revision } = $currentPost;
-        await publishPost({ ...post, handle, byline }, revision)
+        await publishPost({ ...$currentPost, handle, byline }, $currentPost.revision)
         await settings.update(s => ({ ...s, handle, byline }))
-        navigateTo(post.slug, handle)
+        navigateTo($currentPost.slug, handle)
     }
 </script>
 
 <div
     class="publish-button"
     use:shortcut={[
-        { key: 'Escape', onPress: () => { if (!$currentPost?.post.published && $showPublishDialog) toggleShowDialog()}},
-        { key: 'Enter', meta: true,  onPress: () => { if (!$currentPost?.post.published && !$showPublishDialog) toggleShowDialog() }}
+        { key: 'Escape', onPress: () => { if (!$currentPost?.published && $showPublishDialog) toggleShowDialog()}},
+        { key: 'Enter', meta: true,  onPress: () => { if (!$currentPost?.published && !$showPublishDialog) toggleShowDialog() }}
     ]}
 >
     {#if $showPublishDialog}
@@ -40,7 +39,7 @@
             show={showPublishDialog}
         />
     {/if}
-    {#if !$currentPost?.post.published}
+    {#if !$currentPost?.published}
         <button class="btn btn-primary" class:cmd-visible={$cmdState.cmd} on:click={() => toggleShowDialog()}>
             <span class="btn-label">
                 Publish
@@ -53,10 +52,3 @@
         </button>
     {/if}
 </div>
-
-<style>
-    .publish-button {
-        display: flex;
-        gap: 1rem;
-    }
-</style>

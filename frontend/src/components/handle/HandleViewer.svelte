@@ -1,11 +1,12 @@
 <script>
     import { onMount } from 'svelte';
-    import { currentHandle } from '../routing.js';
+    import { currentHandle } from '../../routing.js';
     import { apiFetch } from '@utils/fetch.js';
-    import { API_BASE } from '../env.js'
     import { marked } from 'marked';
 
-    import PostMeta from './post/PostMeta.svelte'
+    import PostMeta from '../post/PostMeta.svelte'
+    import './handle.css';
+    import '../post/post.css';
 
     let posts = undefined;
 
@@ -50,67 +51,3 @@
     {/if}
 {/if}
 </div>
-
-<style>
-    .handle-header {
-        margin: 0;
-        font-family: var(--font-mono);
-    }
-
-    @media (min-width: 768px) {
-        .handle-header {
-            margin: 3rem 0 1rem;
-        }
-    }
-
-    .handle-header h1 {
-        font-size: 2rem;
-    }
-
-    .handle-posts {
-        list-style: none;
-        margin-top: 2rem;
-        padding: 0;
-    }
-
-    .handle-post {
-        margin-bottom: 3rem;
-        text-align: left;
-        padding-bottom: 2rem;
-        border-bottom: solid var(--color-border);
-    }
-
-    .handle-post:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-    }
-
-    .handle-post-link {
-        text-decoration: none;
-        color: inherit;
-        display: block;
-    }
-
-    .post-section {
-        align-items: flex-start;
-    }
-
-    .post-content {
-        font-size: 1.125rem;
-    }
-
-    .handle-post .post-content :global(h1) {
-        font-size: 1.4rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .handle-post .post-content :global(h2) {
-        font-size: 1.25rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .handle-post-link:hover {
-      background-color: #f9f9f9;
-      transition: background 0.2s ease;
-    }
-</style>

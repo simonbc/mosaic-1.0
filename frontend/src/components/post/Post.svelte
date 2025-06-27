@@ -35,9 +35,3 @@
         {/if}
     </article>
 {/if}
-
-<style>
-    .post-shortcuts {
-        width: 100%;
-    }
-</style>

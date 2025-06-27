@@ -43,3 +43,13 @@ def verify_or_register_handle(session: Session, handle: str, public_key: str, si
         verify_handle(existing, signature)
     else:
         register_handle(session, handle, public_key)
+
+
+def get_handle(session: Session, handle: str) -> Handle:
+    """
+    Retrieves a handle by name (case-insensitive).
+    """
+    result = session.query(Handle).filter(Handle.handle.ilike(handle)).first()
+    if not result:
+        raise HTTPException(status_code=404, detail="Handle not found")
+    return result

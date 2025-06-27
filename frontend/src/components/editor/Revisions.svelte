@@ -10,7 +10,7 @@
     }
   
     function handleRreviewRevision(rev) {
-        if (rev.id === $currentPost.post.latestRevisionId) {
+        if (rev.id === $currentPost.latestRevisionId) {
             previewRevision.set(null);
         } else {
             previewRevision.set(rev);
@@ -49,95 +49,3 @@
         </div>
     </div>
 {/if}
-
-<style>
-    .revisions-wrapper {
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      margin-top: 8px;
-      z-index: 100;
-    }
-
-    .revisions-wrapper::before {
-        content: "";
-        position: absolute;
-        top: -6px;
-        left: 50%;
-        transform: translateX(-50%);
-        border-left: 7px solid transparent;
-        border-right: 7px solid transparent;
-        border-bottom: 7px solid #ddd; /* border color */
-        z-index: 1;
-    }
-
-    .revisions-wrapper::after {
-        content: "";
-        position: absolute;
-        top: -5px;
-        left: 50%;
-        transform: translateX(-50%);
-        border-left: 6px solid transparent;
-        border-right: 6px solid transparent;
-        border-bottom: 6px solid white; /* dropdown background */
-        z-index: 2;
-    }
-
-    .revisions-dropdown {
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 25px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        padding: 1rem 0.5rem;
-        width: 280px;
-    }
-
-    .revisions-scroll {
-        padding: 0 0.5rem;
-        max-height: 400px;
-        overflow-y: auto;
-    }
-
-    .revisions-dropdown ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-
-    .revisions-dropdown li {
-        padding: 0.8rem 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.85rem;
-        border-bottom: 1px solid #f0f0f0;
-        cursor: pointer;
-    }
-
-    .revisions-dropdown li:last-child {
-        border: 0;
-    }
-
-    .revisions-dropdown li:hover {
-        background-color: #f9f9f9;
-    }
-
-    .revisions-dropdown li time {
-        color: #888;
-        font-size: 0.85rem;
-    }
-
-    .overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 2rem;
-        z-index: 10;
-    }
-</style>
