@@ -7,8 +7,9 @@
     "clean": "rm -rf dist",
     "dev": "vite",
     "format": "prettier --write .",
-    "build": "vite build",
-    "build:watch": "vite build --watch",
+    "build": "vite build  --mode development",
+    "build:production": "vite build  --mode production",
+    "build:watch": "vite build --mode development --watch",
     "mosaic:build": "./scripts/build.sh",
     "preview": "vite preview"
   },
