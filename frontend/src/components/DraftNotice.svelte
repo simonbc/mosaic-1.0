@@ -17,7 +17,7 @@
 {#if hasDrafts}
   <div class="notice">
     You have {$draftCount} local draft {$draftCount > 1 ? 'posts' : 'post'}.
-    <a href="#" class="view-drafts" on:click={openModal}>View drafts</a>
+    <a href="#" class="view-drafts" on:click|preventDefault={openModal}>View drafts</a>
   </div>
 {/if}
 
